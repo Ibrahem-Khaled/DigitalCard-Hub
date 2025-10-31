@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c514d8f7b9fc5970bdd94287905ef584",
+    "content-hash": "650887be89e48971d9c3e666a847a80d",
     "packages": [
+        {
+            "name": "amwalpay/laravel-package",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amwal-pay/laravel_package.git",
+                "reference": "947be2daf4becaf42e73af328fc850dc9c525f7c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amwal-pay/laravel_package/zipball/947be2daf4becaf42e73af328fc850dc9c525f7c",
+                "reference": "947be2daf4becaf42e73af328fc850dc9c525f7c",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AmwalPay\\LaravelPackage\\AmwalPayServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AmwalPay\\LaravelPackage\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "AmwalPay Technical Team"
+                }
+            ],
+            "description": "AmwalPay Payment for Laravel.",
+            "homepage": "https://www.amwal-pay.com/",
+            "keywords": [
+                "AmwalPay",
+                "amwal",
+                "laravel",
+                "payment"
+            ],
+            "support": {
+                "issues": "https://github.com/amwal-pay/laravel_package/issues",
+                "source": "https://github.com/amwal-pay/laravel_package/tree/main"
+            },
+            "time": "2025-09-08T10:58:58+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.14.0",
@@ -8390,7 +8441,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "amwalpay/laravel-package": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

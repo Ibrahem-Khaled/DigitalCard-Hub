@@ -1,0 +1,303 @@
+/* ========================================
+   إصلاح الوضع المطوي - الشريط الجانبي
+   ======================================== */
+
+/* الوضع المطوي للشاشات الكبيرة */
+@media (min-width: 993px) {
+    .sidebar.collapsed {
+        width: 70px;
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(20px);
+    }
+
+    .sidebar.collapsed .nav-content {
+        display: none;
+    }
+
+    .sidebar.collapsed .section-title {
+        display: none;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: center;
+        padding: 12px 8px;
+        min-height: 48px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: center;
+        padding: 12px 8px;
+    }
+
+    .sidebar.collapsed .nav-icon-wrapper {
+        width: 32px;
+        height: 32px;
+        margin: 0 auto;
+        flex-shrink: 0;
+    }
+
+    .sidebar.collapsed .nav-icon {
+        font-size: 18px;
+    }
+
+    .sidebar.collapsed .sidebar-header {
+        padding: 16px 8px;
+    }
+
+    .sidebar.collapsed .brand-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        margin: 0 auto;
+    }
+
+    .sidebar.collapsed .sidebar-content {
+        padding: 16px 0;
+    }
+
+    .sidebar.collapsed .sidebar-section {
+        margin-bottom: 24px;
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+        padding: 16px 8px;
+    }
+
+    .sidebar.collapsed .user-avatar {
+        margin: 0 auto;
+    }
+
+    .sidebar.collapsed .avatar-content {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+}
+
+/* الوضع المطوي للشاشات المتوسطة */
+@media (max-width: 992px) {
+    .sidebar.collapsed {
+        width: 280px;
+        transform: translateX(100%);
+    }
+
+    .sidebar.collapsed.open {
+        width: 280px;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .nav-content {
+        display: flex;
+    }
+
+    .sidebar.collapsed .section-title {
+        display: block;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 12px 20px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: flex-start;
+        padding: 16px;
+    }
+
+    .sidebar.collapsed .nav-icon-wrapper {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .sidebar.collapsed .sidebar-header {
+        padding: 24px 20px;
+    }
+
+    .sidebar.collapsed .brand-icon-wrapper {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .sidebar-content {
+        padding: 20px 0;
+    }
+
+    .sidebar.collapsed .sidebar-section {
+        margin-bottom: 32px;
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+        padding: 20px;
+    }
+
+    .sidebar.collapsed .user-avatar {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .avatar-content {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+}
+
+/* الوضع المطوي للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .sidebar.collapsed {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .nav-content {
+        display: flex;
+    }
+
+    .sidebar.collapsed .section-title {
+        display: block;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 12px 16px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: flex-start;
+        padding: 12px;
+    }
+
+    .sidebar.collapsed .nav-icon-wrapper {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .sidebar.collapsed .sidebar-header {
+        padding: 20px 16px;
+    }
+
+    .sidebar.collapsed .brand-icon-wrapper {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .sidebar-content {
+        padding: 16px 0;
+    }
+
+    .sidebar.collapsed .sidebar-section {
+        margin-bottom: 24px;
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+        padding: 16px;
+    }
+
+    .sidebar.collapsed .user-avatar {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .avatar-content {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+}
+
+/* الوضع المطوي للشاشات الصغيرة جداً */
+@media (max-width: 576px) {
+    .sidebar.collapsed {
+        width: 100%;
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .nav-content {
+        display: flex;
+    }
+
+    .sidebar.collapsed .section-title {
+        display: block;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 12px 16px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: flex-start;
+        padding: 12px;
+    }
+
+    .sidebar.collapsed .nav-icon-wrapper {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .sidebar.collapsed .sidebar-header {
+        padding: 20px 16px;
+    }
+
+    .sidebar.collapsed .brand-icon-wrapper {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .sidebar-content {
+        padding: 16px 0;
+    }
+
+    .sidebar.collapsed .sidebar-section {
+        margin-bottom: 24px;
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+        padding: 16px;
+    }
+
+    .sidebar.collapsed .user-avatar {
+        margin: 0;
+    }
+
+    .sidebar.collapsed .avatar-content {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+}

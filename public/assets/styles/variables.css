@@ -1,0 +1,144 @@
+/* ========================================
+   متجر البطاقات الرقمية - متغيرات CSS الأساسية
+   ======================================== */
+
+:root {
+    /* الألوان الأساسية */
+    --primary-purple: #8B5CF6;
+    --secondary-purple: #A78BFA;
+    --light-purple: #DDD6FE;
+    --dark-purple: #6D28D9;
+    --accent-purple: #C4B5FD;
+
+    /* ألوان النص */
+    --text-dark: #1F2937;
+    --text-light: #6B7280;
+    --text-muted: #9CA3AF;
+
+    /* ألوان الخلفية */
+    --bg-light: #F9FAFB;
+    --bg-white: #FFFFFF;
+    --bg-gray: #F3F4F6;
+
+    /* ألوان الحدود */
+    --border-color: #E5E7EB;
+    --border-light: #F3F4F6;
+
+    /* ألوان الحالة */
+    --success-color: #10B981;
+    --warning-color: #F59E0B;
+    --danger-color: #EF4444;
+    --info-color: #3B82F6;
+
+    /* الظلال */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+    /* الانتقالات */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+
+    /* الحدود المدورة */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+
+    /* المسافات */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* أحجام الخطوط */
+    --font-xs: 0.75rem;
+    --font-sm: 0.875rem;
+    --font-base: 1rem;
+    --font-lg: 1.125rem;
+    --font-xl: 1.25rem;
+    --font-2xl: 1.5rem;
+    --font-3xl: 1.875rem;
+    --font-4xl: 2.25rem;
+}
+
+/* ========================================
+   إعدادات الخطوط الأساسية
+   ======================================== */
+
+* {
+    font-family: 'Cairo', sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    font-size: var(--font-sm);
+    line-height: 1.6;
+}
+
+/* ========================================
+   فئات مساعدة عامة
+   ======================================== */
+
+.text-primary-purple { color: var(--primary-purple) !important; }
+.text-secondary-purple { color: var(--secondary-purple) !important; }
+.text-light-purple { color: var(--light-purple) !important; }
+.text-dark-purple { color: var(--dark-purple) !important; }
+
+.bg-primary-purple { background-color: var(--primary-purple) !important; }
+.bg-secondary-purple { background-color: var(--secondary-purple) !important; }
+.bg-light-purple { background-color: var(--light-purple) !important; }
+.bg-dark-purple { background-color: var(--dark-purple) !important; }
+
+.border-primary-purple { border-color: var(--primary-purple) !important; }
+.border-secondary-purple { border-color: var(--secondary-purple) !important; }
+
+.shadow-purple {
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+}
+
+.shadow-purple-lg {
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4) !important;
+}
+
+/* ========================================
+   فئات الانتقالات
+   ======================================== */
+
+.transition-fast { transition: all var(--transition-fast); }
+.transition-normal { transition: all var(--transition-normal); }
+.transition-slow { transition: all var(--transition-slow); }
+
+/* ========================================
+   فئات الحدود المدورة
+   ======================================== */
+
+.rounded-sm { border-radius: var(--radius-sm) !important; }
+.rounded-md { border-radius: var(--radius-md) !important; }
+.rounded-lg { border-radius: var(--radius-lg) !important; }
+.rounded-xl { border-radius: var(--radius-xl) !important; }
+.rounded-2xl { border-radius: var(--radius-2xl) !important; }
+
+/* ========================================
+   فئات المسافات المخصصة
+   ======================================== */
+
+.p-xs { padding: var(--spacing-xs) !important; }
+.p-sm { padding: var(--spacing-sm) !important; }
+.p-md { padding: var(--spacing-md) !important; }
+.p-lg { padding: var(--spacing-lg) !important; }
+.p-xl { padding: var(--spacing-xl) !important; }
+.p-2xl { padding: var(--spacing-2xl) !important; }
+
+.m-xs { margin: var(--spacing-xs) !important; }
+.m-sm { margin: var(--spacing-sm) !important; }
+.m-md { margin: var(--spacing-md) !important; }
+.m-lg { margin: var(--spacing-lg) !important; }
+.m-xl { margin: var(--spacing-xl) !important; }
+.m-2xl { margin: var(--spacing-2xl) !important; }

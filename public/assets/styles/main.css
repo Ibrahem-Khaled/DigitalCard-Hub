@@ -1,0 +1,541 @@
+/* ========================================
+   متجر البطاقات الرقمية - ملف CSS الرئيسي
+   ======================================== */
+
+/* استيراد ملفات CSS الفرعية */
+@import url('variables.css');
+@import url('components.css');
+@import url('web-components.css');
+@import url('dashboard-components.css');
+
+/* ========================================
+   إضافات عامة إضافية
+   ======================================== */
+
+/* تحسينات للأداء */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-feature-settings: "liga" 1, "kern" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* تحسينات للخطوط العربية */
+.arabic-text {
+    font-family: 'Cairo', 'Tajawal', 'Amiri', sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+
+/* تحسينات للصور */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* تحسينات للأزرار */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* تحسينات للبطاقات */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-purple), var(--secondary-purple));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.card:hover::before {
+    transform: scaleX(1);
+}
+
+/* تحسينات للجداول */
+.table-responsive {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+/* تحسينات للنماذج */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/* تحسينات للتنبيهات */
+.alert {
+    position: relative;
+    overflow: hidden;
+}
+
+.alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: currentColor;
+}
+
+/* تحسينات للقوائم المنسدلة */
+.dropdown-menu {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* تحسينات للشريط الجانبي */
+.sidebar {
+    backdrop-filter: blur(10px);
+}
+
+/* تحسينات للهيدر */
+.header {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* تحسينات للانتقالات */
+.transition-all {
+    transition: all var(--transition-normal);
+}
+
+.transition-colors {
+    transition: color var(--transition-normal), background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.transition-transform {
+    transition: transform var(--transition-normal);
+}
+
+/* تحسينات للظلال */
+.shadow-hover {
+    transition: box-shadow var(--transition-normal);
+}
+
+.shadow-hover:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* تحسينات للحدود */
+.border-hover {
+    transition: border-color var(--transition-normal);
+}
+
+.border-hover:hover {
+    border-color: var(--primary-purple);
+}
+
+/* تحسينات للألوان */
+.text-hover {
+    transition: color var(--transition-normal);
+}
+
+.text-hover:hover {
+    color: var(--primary-purple);
+}
+
+/* تحسينات للخلفيات */
+.bg-hover {
+    transition: background-color var(--transition-normal);
+}
+
+.bg-hover:hover {
+    background-color: var(--light-purple);
+}
+
+/* تحسينات للاستجابة */
+@media (max-width: 1200px) {
+    .container-fluid {
+        padding-left: var(--spacing-md);
+        padding-right: var(--spacing-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
+}
+
+/* تحسينات للطباعة */
+@media print {
+    .sidebar,
+    .header,
+    .btn,
+    .dropdown-menu {
+        display: none !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* تحسينات للوصولية */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* تحسينات للوضع المظلم */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-white: #1a1a1a;
+        --bg-light: #2d2d2d;
+        --bg-gray: #3a3a3a;
+        --text-dark: #ffffff;
+        --text-light: #b0b0b0;
+        --text-muted: #808080;
+        --border-color: #404040;
+    }
+}
+
+/* تحسينات للتركيز */
+.focus-visible {
+    outline: 2px solid var(--primary-purple);
+    outline-offset: 2px;
+}
+
+/* تحسينات للتحميل */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* تحسينات للرسوم المتحركة */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+    40%, 43% {
+        transform: translate3d(0, -30px, 0);
+    }
+    70% {
+        transform: translate3d(0, -15px, 0);
+    }
+    90% {
+        transform: translate3d(0, -4px, 0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideIn {
+    animation: slideIn 0.3s ease-out;
+}
+
+.animate-bounce {
+    animation: bounce 1s;
+}
+
+/* تحسينات للخطوط */
+.font-weight-light {
+    font-weight: 300;
+}
+
+.font-weight-normal {
+    font-weight: 400;
+}
+
+.font-weight-medium {
+    font-weight: 500;
+}
+
+.font-weight-semibold {
+    font-weight: 600;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}
+
+.font-weight-extrabold {
+    font-weight: 800;
+}
+
+/* تحسينات للمسافات */
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-5 { gap: 1.25rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+.gap-10 { gap: 2.5rem; }
+.gap-12 { gap: 3rem; }
+
+/* تحسينات للأحجام */
+.w-25 { width: 25%; }
+.w-50 { width: 50%; }
+.w-75 { width: 75%; }
+.w-100 { width: 100%; }
+
+.h-25 { height: 25%; }
+.h-50 { height: 50%; }
+.h-75 { height: 75%; }
+.h-100 { height: 100%; }
+
+/* تحسينات للمواضع */
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.position-fixed { position: fixed; }
+.position-sticky { position: sticky; }
+
+/* تحسينات للعرض */
+.d-none { display: none; }
+.d-block { display: block; }
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+
+/* تحسينات للمحاذاة */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+.align-items-start { align-items: flex-start; }
+.align-items-center { align-items: center; }
+.align-items-end { align-items: flex-end; }
+
+.justify-content-start { justify-content: flex-start; }
+.justify-content-center { justify-content: center; }
+.justify-content-end { justify-content: flex-end; }
+.justify-content-between { justify-content: space-between; }
+.justify-content-around { justify-content: space-around; }
+
+/* تحسينات للفليكس */
+.flex-row { flex-direction: row; }
+.flex-column { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+
+.flex-1 { flex: 1; }
+.flex-auto { flex: auto; }
+.flex-none { flex: none; }
+
+/* تحسينات للحدود */
+.border { border: 1px solid var(--border-color); }
+.border-top { border-top: 1px solid var(--border-color); }
+.border-bottom { border-bottom: 1px solid var(--border-color); }
+.border-left { border-left: 1px solid var(--border-color); }
+.border-right { border-right: 1px solid var(--border-color); }
+
+.border-0 { border: 0; }
+.border-top-0 { border-top: 0; }
+.border-bottom-0 { border-bottom: 0; }
+.border-left-0 { border-left: 0; }
+.border-right-0 { border-right: 0; }
+
+/* تحسينات للظلال */
+.shadow-none { box-shadow: none; }
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* تحسينات للشفافية */
+.opacity-0 { opacity: 0; }
+.opacity-25 { opacity: 0.25; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+/* تحسينات للتحويلات */
+.transform-none { transform: none; }
+.transform-scale { transform: scale(1.05); }
+.transform-rotate { transform: rotate(5deg); }
+.transform-translate { transform: translate(5px, 5px); }
+
+/* تحسينات للانتقالات */
+.transition-none { transition: none; }
+.transition-all { transition: all var(--transition-normal); }
+.transition-colors { transition: color var(--transition-normal), background-color var(--transition-normal), border-color var(--transition-normal); }
+.transition-opacity { transition: opacity var(--transition-normal); }
+.transition-transform { transition: transform var(--transition-normal); }
+
+/* تحسينات للتفاعل */
+.cursor-pointer { cursor: pointer; }
+.cursor-default { cursor: default; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+.user-select-none { user-select: none; }
+.user-select-auto { user-select: auto; }
+.user-select-all { user-select: all; }
+
+.pointer-events-none { pointer-events: none; }
+.pointer-events-auto { pointer-events: auto; }
+
+/* تحسينات للتمرير */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-scroll { overflow: scroll; }
+.overflow-visible { overflow: visible; }
+
+.overflow-x-hidden { overflow-x: hidden; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-x-scroll { overflow-x: scroll; }
+.overflow-x-visible { overflow-x: visible; }
+
+.overflow-y-hidden { overflow-y: hidden; }
+.overflow-y-auto { overflow-y: auto; }
+.overflow-y-scroll { overflow-y: scroll; }
+.overflow-y-visible { overflow-y: visible; }
+
+/* تحسينات للحدود المدورة */
+.rounded-none { border-radius: 0; }
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-2xl { border-radius: var(--radius-2xl); }
+.rounded-full { border-radius: 50%; }
+
+.rounded-t-none { border-top-left-radius: 0; border-top-right-radius: 0; }
+.rounded-t-sm { border-top-left-radius: var(--radius-sm); border-top-right-radius: var(--radius-sm); }
+.rounded-t { border-top-left-radius: var(--radius-md); border-top-right-radius: var(--radius-md); }
+.rounded-t-lg { border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); }
+.rounded-t-xl { border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+.rounded-t-2xl { border-top-left-radius: var(--radius-2xl); border-top-right-radius: var(--radius-2xl); }
+
+.rounded-b-none { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.rounded-b-sm { border-bottom-left-radius: var(--radius-sm); border-bottom-right-radius: var(--radius-sm); }
+.rounded-b { border-bottom-left-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); }
+.rounded-b-lg { border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg); }
+.rounded-b-xl { border-bottom-left-radius: var(--radius-xl); border-bottom-right-radius: var(--radius-xl); }
+.rounded-b-2xl { border-bottom-left-radius: var(--radius-2xl); border-bottom-right-radius: var(--radius-2xl); }
+
+.rounded-l-none { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.rounded-l-sm { border-top-left-radius: var(--radius-sm); border-bottom-left-radius: var(--radius-sm); }
+.rounded-l { border-top-left-radius: var(--radius-md); border-bottom-left-radius: var(--radius-md); }
+.rounded-l-lg { border-top-left-radius: var(--radius-lg); border-bottom-left-radius: var(--radius-lg); }
+.rounded-l-xl { border-top-left-radius: var(--radius-xl); border-bottom-left-radius: var(--radius-xl); }
+.rounded-l-2xl { border-top-left-radius: var(--radius-2xl); border-bottom-left-radius: var(--radius-2xl); }
+
+.rounded-r-none { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.rounded-r-sm { border-top-right-radius: var(--radius-sm); border-bottom-right-radius: var(--radius-sm); }
+.rounded-r { border-top-right-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); }
+.rounded-r-lg { border-top-right-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg); }
+.rounded-r-xl { border-top-right-radius: var(--radius-xl); border-bottom-right-radius: var(--radius-xl); }
+.rounded-r-2xl { border-top-right-radius: var(--radius-2xl); border-bottom-right-radius: var(--radius-2xl); }
+
+/* تحسينات للحدود المدورة الفردية */
+.rounded-tl-none { border-top-left-radius: 0; }
+.rounded-tl-sm { border-top-left-radius: var(--radius-sm); }
+.rounded-tl { border-top-left-radius: var(--radius-md); }
+.rounded-tl-lg { border-top-left-radius: var(--radius-lg); }
+.rounded-tl-xl { border-top-left-radius: var(--radius-xl); }
+.rounded-tl-2xl { border-top-left-radius: var(--radius-2xl); }
+
+.rounded-tr-none { border-top-right-radius: 0; }
+.rounded-tr-sm { border-top-right-radius: var(--radius-sm); }
+.rounded-tr { border-top-right-radius: var(--radius-md); }
+.rounded-tr-lg { border-top-right-radius: var(--radius-lg); }
+.rounded-tr-xl { border-top-right-radius: var(--radius-xl); }
+.rounded-tr-2xl { border-top-right-radius: var(--radius-2xl); }
+
+.rounded-bl-none { border-bottom-left-radius: 0; }
+.rounded-bl-sm { border-bottom-left-radius: var(--radius-sm); }
+.rounded-bl { border-bottom-left-radius: var(--radius-md); }
+.rounded-bl-lg { border-bottom-left-radius: var(--radius-lg); }
+.rounded-bl-xl { border-bottom-left-radius: var(--radius-xl); }
+.rounded-bl-2xl { border-bottom-left-radius: var(--radius-2xl); }
+
+.rounded-br-none { border-bottom-right-radius: 0; }
+.rounded-br-sm { border-bottom-right-radius: var(--radius-sm); }
+.rounded-br { border-bottom-right-radius: var(--radius-md); }
+.rounded-br-lg { border-bottom-right-radius: var(--radius-lg); }
+.rounded-br-xl { border-bottom-right-radius: var(--radius-xl); }
+.rounded-br-2xl { border-bottom-right-radius: var(--radius-2xl); }

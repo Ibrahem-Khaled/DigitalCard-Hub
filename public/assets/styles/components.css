@@ -1,0 +1,385 @@
+/* ========================================
+   متجر البطاقات الرقمية - المكونات العامة
+   ======================================== */
+
+/* ========================================
+   الأزرار المخصصة
+   ======================================== */
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: var(--font-base);
+    transition: all var(--transition-normal);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-purple);
+    color: white;
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+    color: white;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-purple);
+    color: var(--primary-purple);
+    background: transparent;
+    border-radius: var(--radius-lg);
+    padding: 10px 22px;
+    font-weight: 600;
+    transition: all var(--transition-normal);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-purple);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-purple);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--accent-purple) 100%);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 12px 24px;
+    font-weight: 600;
+    color: white;
+    transition: all var(--transition-normal);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+    color: white;
+}
+
+/* ========================================
+   البطاقات المخصصة
+   ======================================== */
+
+.card {
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    background: var(--bg-white);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--bg-white) 0%, var(--light-purple) 100%);
+    border-bottom: 1px solid var(--border-color);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+    padding: var(--spacing-lg);
+}
+
+.card-body {
+    padding: var(--spacing-lg);
+}
+
+.card-footer {
+    background: var(--bg-gray);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl) !important;
+    padding: var(--spacing-lg);
+}
+
+/* ========================================
+   بطاقات الإحصائيات
+   ======================================== */
+
+.stats-card {
+    background: linear-gradient(135deg, var(--bg-white) 0%, var(--light-purple) 100%);
+    border-left: 4px solid var(--primary-purple);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-normal);
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stats-card .card-body {
+    padding: var(--spacing-xl);
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-purple);
+    margin-bottom: var(--spacing-xs);
+    line-height: 1;
+}
+
+.stats-label {
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: var(--font-sm);
+}
+
+.stats-icon {
+    font-size: 3rem;
+    color: var(--primary-purple);
+    opacity: 0.8;
+}
+
+/* ========================================
+   الجداول المخصصة
+   ======================================== */
+
+.table {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table thead th {
+    background-color: var(--light-purple);
+    border: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    padding: var(--spacing-lg);
+    font-size: var(--font-sm);
+}
+
+.table tbody td {
+    padding: var(--spacing-lg);
+    border-color: var(--border-color);
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: var(--bg-gray);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(139, 92, 246, 0.02);
+}
+
+/* ========================================
+   الشارات المخصصة
+   ======================================== */
+
+.badge {
+    border-radius: var(--radius-2xl);
+    padding: 6px 12px;
+    font-weight: 500;
+    font-size: var(--font-xs);
+}
+
+.badge-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.badge-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.badge-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.badge-info {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.badge-primary {
+    background-color: var(--primary-purple);
+    color: white;
+}
+
+.badge-secondary {
+    background-color: var(--secondary-purple);
+    color: white;
+}
+
+/* ========================================
+   النماذج المخصصة
+   ======================================== */
+
+.form-control {
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 12px 16px;
+    font-size: var(--font-sm);
+    transition: all var(--transition-normal);
+    background: var(--bg-white);
+}
+
+.form-control:focus {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+    background: var(--bg-white);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+}
+
+.form-control.is-valid {
+    border-color: var(--success-color);
+}
+
+.form-label {
+    color: var(--text-dark);
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+}
+
+.form-floating .form-control {
+    padding: 12px 16px;
+}
+
+.form-floating label {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* ========================================
+   التنبيهات المخصصة
+   ======================================== */
+
+.alert {
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-sm);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+    border-left: 4px solid var(--warning-color);
+}
+
+.alert-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--info-color);
+    border-left: 4px solid var(--info-color);
+}
+
+/* ========================================
+   الصفحات المخصصة
+   ======================================== */
+
+.pagination {
+    justify-content: center;
+}
+
+.page-link {
+    color: var(--primary-purple);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin: 0 2px;
+    padding: 8px 12px;
+    transition: all var(--transition-normal);
+}
+
+.page-link:hover {
+    background-color: var(--primary-purple);
+    border-color: var(--primary-purple);
+    color: white;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-purple);
+    border-color: var(--primary-purple);
+    color: white;
+}
+
+/* ========================================
+   القوائم المنسدلة المخصصة
+   ======================================== */
+
+.dropdown-menu {
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-sm) 0;
+    margin-top: var(--spacing-sm);
+}
+
+.dropdown-item {
+    padding: var(--spacing-md) var(--spacing-lg);
+    transition: all var(--transition-normal);
+    color: var(--text-dark);
+}
+
+.dropdown-item:hover {
+    background-color: var(--light-purple);
+    color: var(--primary-purple);
+}
+
+.dropdown-divider {
+    border-color: var(--border-color);
+    margin: var(--spacing-sm) 0;
+}
+
+/* ========================================
+   التقدم والتحميل
+   ======================================== */
+
+.progress {
+    height: 8px;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-gray);
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    border-radius: var(--radius-md);
+}
+
+/* ========================================
+   الأدوات المساعدة
+   ======================================== */
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%) 1;
+}
+
+.shadow-hover {
+    transition: all var(--transition-normal);
+}
+
+.shadow-hover:hover {
+    box-shadow: var(--shadow-lg);
+}

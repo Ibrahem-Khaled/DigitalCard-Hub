@@ -1,0 +1,404 @@
+/* ========================================
+   متجر البطاقات الرقمية - مكونات الويب
+   ======================================== */
+
+/* ========================================
+   صفحة تسجيل الدخول
+   ======================================== */
+
+.auth-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    max-width: 400px;
+    width: 100%;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    color: white;
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.auth-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: var(--font-2xl);
+}
+
+.auth-header p {
+    margin: var(--spacing-md) 0 0 0;
+    opacity: 0.9;
+    font-size: var(--font-sm);
+}
+
+.auth-body {
+    padding: var(--spacing-2xl);
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+}
+
+.auth-links a {
+    color: var(--primary-purple);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-normal);
+}
+
+.auth-links a:hover {
+    color: var(--dark-purple);
+}
+
+.divider {
+    text-align: center;
+    margin: var(--spacing-lg) 0;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.divider span {
+    background: var(--bg-white);
+    padding: 0 var(--spacing-lg);
+    color: var(--text-light);
+    font-size: var(--font-sm);
+}
+
+/* ========================================
+   صفحة التسجيل
+   ======================================== */
+
+.register-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    max-width: 500px;
+    width: 100%;
+}
+
+.register-header {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    color: white;
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.register-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: var(--font-2xl);
+}
+
+.register-header p {
+    margin: var(--spacing-md) 0 0 0;
+    opacity: 0.9;
+    font-size: var(--font-sm);
+}
+
+.register-body {
+    padding: var(--spacing-2xl);
+}
+
+/* ========================================
+   فحص قوة كلمة المرور
+   ======================================== */
+
+.password-strength {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-xs);
+}
+
+.strength-weak {
+    color: var(--danger-color);
+}
+
+.strength-medium {
+    color: var(--warning-color);
+}
+
+.strength-strong {
+    color: var(--success-color);
+}
+
+/* ========================================
+   صفحة إعادة تعيين كلمة المرور
+   ======================================== */
+
+.reset-password-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    max-width: 400px;
+    width: 100%;
+}
+
+.reset-password-header {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    color: white;
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.reset-password-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: var(--font-2xl);
+}
+
+.reset-password-header p {
+    margin: var(--spacing-md) 0 0 0;
+    opacity: 0.9;
+    font-size: var(--font-sm);
+}
+
+.reset-password-body {
+    padding: var(--spacing-2xl);
+}
+
+/* ========================================
+   صفحة تغيير كلمة المرور
+   ======================================== */
+
+.change-password-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-2xl);
+    max-width: 500px;
+    width: 100%;
+}
+
+.change-password-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.change-password-header h2 {
+    color: var(--primary-purple);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.change-password-header p {
+    color: var(--text-light);
+    font-size: var(--font-sm);
+}
+
+/* ========================================
+   صفحة نسيان كلمة المرور
+   ======================================== */
+
+.forgot-password-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    max-width: 400px;
+    width: 100%;
+}
+
+.forgot-password-header {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    color: white;
+    padding: var(--spacing-2xl);
+    text-align: center;
+}
+
+.forgot-password-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: var(--font-2xl);
+}
+
+.forgot-password-header p {
+    margin: var(--spacing-md) 0 0 0;
+    opacity: 0.9;
+    font-size: var(--font-sm);
+}
+
+.forgot-password-body {
+    padding: var(--spacing-2xl);
+}
+
+/* ========================================
+   صفحة الترحيب
+   ======================================== */
+
+.welcome-container {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.welcome-content {
+    background: var(--bg-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    max-width: 600px;
+    width: 100%;
+}
+
+.welcome-content h1 {
+    color: var(--primary-purple);
+    font-weight: 700;
+    font-size: var(--font-4xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+.welcome-content p {
+    color: var(--text-light);
+    font-size: var(--font-lg);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.6;
+}
+
+.welcome-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin: var(--spacing-xl) 0;
+}
+
+.welcome-feature {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    background: var(--bg-gray);
+    transition: all var(--transition-normal);
+}
+
+.welcome-feature:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.welcome-feature i {
+    font-size: var(--font-3xl);
+    color: var(--primary-purple);
+    margin-bottom: var(--spacing-md);
+}
+
+.welcome-feature h3 {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.welcome-feature p {
+    color: var(--text-light);
+    font-size: var(--font-sm);
+    margin: 0;
+}
+
+/* ========================================
+   أزرار العمل
+   ======================================== */
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-purple);
+    color: white;
+}
+
+.btn-action-secondary {
+    background: transparent;
+    border: 2px solid var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+.btn-action-secondary:hover {
+    background: var(--primary-purple);
+    color: white;
+}
+
+/* ========================================
+   الاستجابة للشاشات الصغيرة
+   ======================================== */
+
+@media (max-width: 768px) {
+    .auth-container,
+    .register-container,
+    .reset-password-container,
+    .forgot-password-container {
+        margin: var(--spacing-md);
+        max-width: none;
+    }
+
+    .auth-header,
+    .register-header,
+    .reset-password-header,
+    .forgot-password-header {
+        padding: var(--spacing-xl);
+    }
+
+    .auth-body,
+    .register-body,
+    .reset-password-body,
+    .forgot-password-body {
+        padding: var(--spacing-xl);
+    }
+
+    .welcome-content {
+        margin: var(--spacing-md);
+        padding: var(--spacing-xl);
+    }
+
+    .welcome-content h1 {
+        font-size: var(--font-3xl);
+    }
+
+    .welcome-features {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-action {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}

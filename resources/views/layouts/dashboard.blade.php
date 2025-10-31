@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard-new')
 
 @section('title', 'لوحة التحكم - ' . config('app.name'))
 
@@ -9,7 +9,7 @@
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h3 class="mb-1">مرحباً بك، {{ auth()->user()->name ?? 'المستخدم' }}!</h3>
+                <h3 class="mb-1">مرحباً بك، {{ auth()->user()->full_name ?? 'المستخدم' }}!</h3>
                 <p class="text-muted mb-0">إليك نظرة عامة على أداء متجرك</p>
             </div>
             <div>
@@ -29,7 +29,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stats-number">{{ number_format($stats['total_sales']) }}</div>
+                        <div class="stats-number">{{ number_format($stats['total_sales'] ?? 0) }}</div>
                         <div class="stats-label">إجمالي المبيعات</div>
                     </div>
                     <div class="text-primary">
@@ -52,7 +52,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stats-number">{{ number_format($stats['new_orders']) }}</div>
+                        <div class="stats-number">{{ number_format($stats['new_orders'] ?? 0) }}</div>
                         <div class="stats-label">الطلبات الجديدة</div>
                     </div>
                     <div class="text-primary">
@@ -75,7 +75,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stats-number">{{ number_format($stats['products_count']) }}</div>
+                        <div class="stats-number">{{ number_format($stats['products_count'] ?? 0) }}</div>
                         <div class="stats-label">المنتجات</div>
                     </div>
                     <div class="text-primary">
@@ -98,7 +98,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="stats-number">{{ number_format($stats['customers_count']) }}</div>
+                        <div class="stats-number">{{ number_format($stats['customers_count'] ?? 0) }}</div>
                         <div class="stats-label">العملاء</div>
                     </div>
                     <div class="text-primary">
@@ -142,11 +142,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recent_orders as $order)
+                            @foreach(($recent_orders ?? []) as $order)
                             <tr>
                                 <td><strong>#{{ $order['id'] }}</strong></td>
                                 <td>{{ $order['customer'] }}</td>
-                                <td>{{ number_format($order['amount'], 2) }} ر.س</td>
+                                <td>{{ number_format($order['amount'], 2) }} $</td>
                                 <td>
                                     @if($order['status'] == 'completed')
                                         <span class="badge badge-success">مكتمل</span>
@@ -217,11 +217,11 @@
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">
-                    @foreach($top_products as $product)
+                    @foreach(($top_products ?? []) as $product)
                     <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                         <div>
                             <h6 class="mb-1">{{ $product['name'] }}</h6>
-                            <small class="text-muted">{{ number_format($product['price']) }} ر.س</small>
+                            <small class="text-muted">{{ number_format($product['price']) }} $</small>
                         </div>
                         <span class="badge badge-primary">{{ $product['sales'] }} مبيعة</span>
                     </div>
@@ -262,7 +262,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <strong>دفعة جديدة</strong>
-                                    <p class="text-muted mb-0">تم استلام دفعة بقيمة 150.00 ر.س</p>
+                                    <p class="text-muted mb-0">تم استلام دفعة بقيمة 150.00 $</p>
                                 </div>
                                 <small class="text-muted">منذ 15 دقيقة</small>
                             </div>

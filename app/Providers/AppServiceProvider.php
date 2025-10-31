@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +25,31 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Paginator::useBootstrapFive();
+
+        // Force HTTPS URLs when the request is secure
+        if (request()->isSecure()) {
+            URL::forceScheme('https');
+        }
+
+        View::share('settings', []);
+
+        try {
+            if (Schema::hasTable('settings')) {
+                $publicSettings = Setting::public()->ordered()->get()->mapWithKeys(function (Setting $setting) {
+                    $value = $setting->formatted_value;
+
+                    if ($setting->isFileType() && $value) {
+                        $value = Storage::disk('public')->exists($value) ? Storage::disk('public')->url($value) : $value;
+                    }
+
+                    return [$setting->key => $value];
+                })->toArray();
+
+                View::share('settings', $publicSettings);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }

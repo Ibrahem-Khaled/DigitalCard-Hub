@@ -1,0 +1,10 @@
+/* ========================================
+   متجر البطاقات الرقمية - ملف CSS للويب فقط
+   ======================================== */
+
+/* استيراد الملفات الأساسية */
+@import url('variables.css');
+@import url('components.css');
+@import url('web-components.css');
+@import url('auth-modern.css');
+@import url('auth-enhancements.css');

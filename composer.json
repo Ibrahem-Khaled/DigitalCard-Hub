@@ -2,14 +2,20 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "CardFlow - A comprehensive digital card marketplace platform built with Laravel 12, featuring e-commerce, loyalty programs, AI assistant, and advanced admin dashboard.",
     "keywords": [
         "laravel",
-        "framework"
+        "ecommerce",
+        "digital-cards",
+        "marketplace",
+        "gift-cards",
+        "loyalty-program",
+        "payment-gateway"
     ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "amwalpay/laravel-package": "dev-main",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1"
     },

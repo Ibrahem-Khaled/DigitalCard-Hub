@@ -1,0 +1,74 @@
+/* تحسينات إضافية لصفحات المصادقة */
+
+/* تحسين الخطوط العربية */
+body {
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* تحسين مظهر العناصر التفاعلية */
+.form-control-modern:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+/* تحسين مظهر الأزرار */
+.btn-modern {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-modern:hover::before {
+    left: 100%;
+}
+
+/* تحسين مظهر التنبيهات */
+.alert-modern {
+    animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* تحسين مظهر العناصر الخلفية */
+.bg-shape {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* تحسين الاستجابة للشاشات الصغيرة */
+@media (max-width: 576px) {
+    .auth-container {
+        margin: 0.5rem;
+        border-radius: 1rem;
+    }
+
+    .auth-header {
+        padding: 1.5rem;
+    }
+
+    .auth-body {
+        padding: 1.5rem;
+    }
+}
+

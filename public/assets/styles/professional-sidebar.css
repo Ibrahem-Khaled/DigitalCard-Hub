@@ -1,0 +1,804 @@
+/* ========================================
+   الشريط الجانبي المحسن - متجر البطاقات الرقمية
+   ======================================== */
+
+/* ========================================
+   الشريط الجانبي الأساسي
+   ======================================== */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar.collapsed .brand-text,
+.sidebar.collapsed .brand-subtitle,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-subtitle,
+.sidebar.collapsed .section-text,
+.sidebar.collapsed .user-info {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(20px);
+}
+
+.sidebar.collapsed .sidebar-nav .nav-link {
+    justify-content: center;
+    padding: 12px 8px;
+    min-height: 48px;
+}
+
+.sidebar.collapsed .sidebar-user {
+    justify-content: center;
+    padding: 12px 8px;
+}
+
+.sidebar.collapsed .nav-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    flex-shrink: 0;
+}
+
+.sidebar.collapsed .nav-icon {
+    font-size: 18px;
+}
+
+.sidebar.collapsed .nav-content {
+    display: none;
+}
+
+.sidebar.collapsed .section-title {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-header {
+    padding: 16px 8px;
+}
+
+.sidebar.collapsed .brand-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto;
+}
+
+.sidebar.collapsed .sidebar-content {
+    padding: 16px 0;
+}
+
+.sidebar.collapsed .sidebar-section {
+    margin-bottom: 24px;
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: 16px 8px;
+}
+
+.sidebar.collapsed .user-avatar {
+    margin: 0 auto;
+}
+
+.sidebar.collapsed .avatar-content {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+}
+
+.sidebar.collapsed .sidebar-collapse-btn i {
+    transform: rotate(180deg);
+}
+
+/* ========================================
+   رأس الشريط الجانبي
+   ======================================== */
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.sidebar-brand {
+    flex: 1;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.brand-link:hover {
+    color: white;
+    text-decoration: none;
+    transform: scale(1.02);
+}
+
+.brand-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    transition: all 0.3s ease;
+}
+
+.brand-icon-wrapper:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.brand-icon {
+    font-size: 18px;
+    color: white;
+}
+
+.brand-content {
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.brand-text {
+    font-weight: 700;
+    font-size: 16px;
+    color: white;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.sidebar-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ========================================
+   زر طي الشريط الجانبي
+   ======================================== */
+
+.sidebar-collapse-btn {
+    position: absolute;
+    top: 50%;
+    left: -15px;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-collapse-btn:hover {
+    background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.sidebar-collapse-btn i {
+    transition: transform 0.3s ease;
+}
+
+/* ========================================
+   محتوى الشريط الجانبي
+   ======================================== */
+
+.sidebar-content {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.sidebar-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   أقسام الشريط الجانبي
+   ======================================== */
+
+.sidebar-section {
+    margin-bottom: 32px;
+}
+
+.section-title {
+    padding: 0 20px 12px;
+    margin-bottom: 8px;
+}
+
+.section-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+/* ========================================
+   قائمة التنقل
+   ======================================== */
+
+.sidebar-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-bottom: 4px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1));
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::before {
+    width: 100%;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: rgba(139, 92, 246, 0.15);
+    color: white;
+    transform: translateX(-4px);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+}
+
+.nav-link.active {
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border-right: 3px solid #8B5CF6;
+}
+
+.nav-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.nav-link:hover .nav-icon-wrapper,
+.nav-link.active .nav-icon-wrapper {
+    background: rgba(139, 92, 246, 0.3);
+    transform: scale(1.1);
+}
+
+.nav-icon {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover .nav-icon,
+.nav-link.active .nav-icon {
+    color: white;
+    transform: scale(1.1);
+}
+
+.nav-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.nav-text {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    line-height: 1.2;
+    transition: all 0.3s ease;
+}
+
+.nav-subtitle {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+}
+
+/* ========================================
+   تذييل الشريط الجانبي
+   ======================================== */
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar-user:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar-content {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    transition: all 0.3s ease;
+}
+
+.sidebar-user:hover .avatar-content {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.avatar-status {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #1a1a2e;
+}
+
+.avatar-status.online {
+    background: #10B981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.user-info {
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.user-name {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+.user-role {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.user-status {
+    color: #10B981;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ========================================
+   Overlay للشاشات الصغيرة
+   ======================================== */
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ========================================
+   الاستجابة للشاشات الصغيرة
+   ======================================== */
+
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 260px;
+    }
+
+    .sidebar.collapsed {
+        width: 70px;
+    }
+
+    .sidebar.collapsed .nav-link {
+        padding: 10px 6px;
+        min-height: 44px;
+    }
+
+    .sidebar.collapsed .nav-icon-wrapper {
+        width: 30px;
+        height: 30px;
+    }
+
+    .sidebar.collapsed .nav-icon {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(100%);
+        width: 280px;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed {
+        width: 280px;
+        transform: translateX(100%);
+    }
+
+    .sidebar.collapsed.open {
+        width: 280px;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .nav-content {
+        display: flex;
+    }
+
+    .sidebar.collapsed .section-title {
+        display: block;
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 12px 20px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: flex-start;
+        padding: 16px;
+    }
+
+    .sidebar.collapsed .nav-icon-wrapper {
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .sidebar-collapse-btn {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .sidebar.collapsed {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .sidebar-header {
+        padding: 20px 16px;
+    }
+
+    .sidebar-content {
+        padding: 16px 0;
+    }
+
+    .sidebar-section {
+        margin-bottom: 24px;
+    }
+
+    .section-title {
+        padding: 0 16px 8px;
+    }
+
+    .nav-link {
+        padding: 12px 16px;
+    }
+
+    .sidebar-footer {
+        padding: 16px;
+    }
+
+    .sidebar-user {
+        padding: 12px;
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 12px 16px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: flex-start;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 100%;
+    }
+
+    .sidebar.collapsed {
+        width: 100%;
+    }
+
+    .brand-text {
+        font-size: 14px;
+    }
+
+    .brand-subtitle {
+        font-size: 11px;
+    }
+
+    .nav-text {
+        font-size: 13px;
+    }
+
+    .nav-subtitle {
+        font-size: 10px;
+    }
+
+    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-subtitle,
+    .sidebar.collapsed .nav-text,
+    .sidebar.collapsed .nav-subtitle,
+    .sidebar.collapsed .section-text,
+    .sidebar.collapsed .user-info {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed .sidebar-nav .nav-link {
+        justify-content: flex-start;
+        padding: 12px 16px;
+    }
+
+    .sidebar.collapsed .sidebar-user {
+        justify-content: flex-start;
+        padding: 12px;
+    }
+}
+
+/* ========================================
+   تأثيرات إضافية
+   ======================================== */
+
+/* تأثير التحميل */
+.sidebar.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* تأثير الظهور */
+.sidebar.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* تأثير الانزلاق */
+.sidebar.slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* تأثير الارتداد */
+.sidebar.bounce-in {
+    animation: bounceIn 0.6s ease-out;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* تأثيرات الأزرار */
+.sidebar-collapse-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.sidebar-close-btn:active {
+    transform: scale(0.95);
+}
+
+/* تأثيرات الروابط */
+.nav-link:active {
+    transform: translateX(-2px) scale(0.98);
+}
+
+/* تأثيرات المستخدم */
+.sidebar-user:active {
+    transform: translateY(-1px) scale(0.98);
+}
