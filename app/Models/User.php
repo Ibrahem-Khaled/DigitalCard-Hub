@@ -302,6 +302,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's verification codes.
+     */
+    public function verificationCodes(): HasMany
+    {
+        return $this->hasMany(VerificationCode::class);
+    }
+
+    /**
      * Get total loyalty points for user.
      */
     public function getTotalLoyaltyPointsAttribute(): int

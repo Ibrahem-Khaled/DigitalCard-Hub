@@ -72,7 +72,7 @@ A comprehensive, enterprise-grade digital card marketplace platform built with L
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/cardflow.git
+git clone https://github.com/Ibrahem-Khaled/DigitalCard-Hub.git
 cd cardflow
 ```
 
@@ -380,7 +380,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🆘 Support
 
-For support, email support@cardflow.com or open an issue in the GitHub repository.
+For support, email support@cardflow.com or open an issue in the [GitHub repository](https://github.com/Ibrahem-Khaled/DigitalCard-Hub).
 
 ## 🙏 Acknowledgments
 

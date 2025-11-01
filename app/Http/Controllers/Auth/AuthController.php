@@ -60,15 +60,30 @@ class AuthController extends Controller
         $credentials = $request->only(['login', 'password']);
         $remember = $request->boolean('remember');
 
-        if ($this->authService->attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        // Find user by credentials first (without logging in)
+        $loginField = $credentials['login'] ?? null;
+        $user = null;
+
+        if (filter_var($loginField, FILTER_VALIDATE_EMAIL)) {
+            $user = \App\Models\User::where('email', $loginField)->first();
+        } elseif (preg_match('/^[\+]?[0-9\s\-\(\)]+$/', $loginField)) {
+            $user = \App\Models\User::where('phone', $loginField)->first();
+        }
+
+        // Validate credentials
+        if ($user && \Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password) && $user->isActive()) {
+            // Don't login yet, send verification code instead
+            $this->authService->generateAndSendVerificationCode($user, 'login');
+
+            // Store user ID in session for verification
+            $request->session()->put('verification_user_id', $user->id);
+            $request->session()->put('verification_remember', $remember);
+            $request->session()->put('verification_type', 'login');
+
             RateLimiter::clear($key);
 
-            $user = Auth::user();
-            $redirectPath = $this->authService->getDashboardRedirectPath($user);
-
-            return redirect()->intended($redirectPath)
-                ->with('success', 'مرحباً بك، ' . $user->full_name);
+            return redirect()->route('verification.show')
+                ->with('success', 'تم إرسال كود التحقق إلى بريدك الإلكتروني');
         }
 
         RateLimiter::hit($key, 300); // 5 minutes
@@ -91,11 +106,23 @@ class AuthController extends Controller
      */
     public function register(Request $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
+        // Prepare phone number with country code
+        $phone = $request->input('phone');
+        $countryCode = $request->input('country_code');
+        $phoneNumber = $request->input('phone_number');
+        
+        // If phone is not directly provided, combine country code and phone number
+        if (empty($phone) && !empty($phoneNumber)) {
+            $phone = $countryCode . preg_replace('/^0+/', '', $phoneNumber);
+        }
+
+        $validator = Validator::make(array_merge($request->all(), ['phone' => $phone]), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|unique:users,phone',
+            'country_code' => 'nullable|string|max:10',
+            'phone_number' => 'nullable|string|max:20',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required|string|min:8',
             'birth_date' => 'nullable|date|before:today',
@@ -125,13 +152,22 @@ class AuthController extends Controller
         }
 
         try {
-            $user = $this->authService->register($request->all());
+            // Prepare registration data with phone
+            $registrationData = $request->all();
+            $registrationData['phone'] = $phone; // Use the combined phone number
+            
+            $user = $this->authService->register($registrationData);
 
-            // Auto login after registration
-            Auth::login($user);
+            // Don't login yet, send verification code instead
+            $this->authService->generateAndSendVerificationCode($user, 'registration');
 
-            return redirect()->route('dashboard.index')
-                ->with('success', 'تم إنشاء حسابك بنجاح! مرحباً بك، ' . $user->full_name);
+            // Store user ID in session for verification
+            $request->session()->put('verification_user_id', $user->id);
+            $request->session()->put('verification_remember', false);
+            $request->session()->put('verification_type', 'registration');
+
+            return redirect()->route('verification.show')
+                ->with('success', 'تم إنشاء حسابك بنجاح! تم إرسال كود التحقق إلى بريدك الإلكتروني');
 
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى.'])
@@ -272,5 +308,118 @@ class AuthController extends Controller
         }
 
         return back()->withErrors(['current_password' => 'كلمة المرور الحالية غير صحيحة']);
+    }
+
+    /**
+     * Show verification code form.
+     */
+    public function showVerificationForm(Request $request): View|RedirectResponse
+    {
+        $userId = $request->session()->get('verification_user_id');
+        $type = $request->session()->get('verification_type');
+
+        if (!$userId || !$type) {
+            return redirect()->route('login')
+                ->withErrors(['error' => 'يرجى تسجيل الدخول أو إنشاء حساب جديد']);
+        }
+
+        $user = \App\Models\User::find($userId);
+        if (!$user) {
+            $request->session()->forget(['verification_user_id', 'verification_type', 'verification_remember']);
+            return redirect()->route('login')
+                ->withErrors(['error' => 'المستخدم غير موجود']);
+        }
+
+        return view('auth.verify', compact('user', 'type'));
+    }
+
+    /**
+     * Handle verification code.
+     */
+    public function verify(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|string|size:6',
+        ], [
+            'code.required' => 'كود التحقق مطلوب',
+            'code.size' => 'كود التحقق يجب أن يكون 6 أرقام',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $userId = $request->session()->get('verification_user_id');
+        $type = $request->session()->get('verification_type');
+        $remember = $request->session()->get('verification_remember', false);
+
+        if (!$userId || !$type) {
+            return redirect()->route('login')
+                ->withErrors(['error' => 'انتهت صلاحية الجلسة. يرجى المحاولة مرة أخرى']);
+        }
+
+        $user = \App\Models\User::find($userId);
+        if (!$user) {
+            $request->session()->forget(['verification_user_id', 'verification_type', 'verification_remember']);
+            return redirect()->route('login')
+                ->withErrors(['error' => 'المستخدم غير موجود']);
+        }
+
+        // Verify code
+        if (!$this->authService->verifyCode($user, $request->code, $type)) {
+            return back()->withErrors(['code' => 'كود التحقق غير صحيح أو منتهي الصلاحية'])
+                ->withInput();
+        }
+
+        // Clear verification session data
+        $request->session()->forget(['verification_user_id', 'verification_type', 'verification_remember']);
+
+        // Login the user
+        Auth::login($user, $remember);
+        $request->session()->regenerate();
+
+        // Update last login information
+        $this->authService->updateLastLogin($user);
+
+        // Redirect based on user role
+        $message = $type === 'registration' 
+            ? 'تم إنشاء حسابك بنجاح! مرحباً بك، ' . $user->full_name
+            : 'مرحباً بك، ' . $user->full_name;
+
+        // Redirect admin, manager, employee to dashboard
+        if ($user->isAdmin() || $user->hasAnyRole(['manager', 'employee'])) {
+            return redirect()->route('dashboard.index')
+                ->with('success', $message);
+        }
+
+        // Redirect customers to profile
+        return redirect()->route('profile.index')
+            ->with('success', $message);
+    }
+
+    /**
+     * Resend verification code.
+     */
+    public function resendVerificationCode(Request $request): RedirectResponse
+    {
+        $userId = $request->session()->get('verification_user_id');
+        $type = $request->session()->get('verification_type');
+
+        if (!$userId || !$type) {
+            return redirect()->route('login')
+                ->withErrors(['error' => 'انتهت صلاحية الجلسة. يرجى المحاولة مرة أخرى']);
+        }
+
+        $user = \App\Models\User::find($userId);
+        if (!$user) {
+            $request->session()->forget(['verification_user_id', 'verification_type', 'verification_remember']);
+            return redirect()->route('login')
+                ->withErrors(['error' => 'المستخدم غير موجود']);
+        }
+
+        // Resend verification code
+        $this->authService->resendVerificationCode($user, $type);
+
+        return back()->with('success', 'تم إعادة إرسال كود التحقق إلى بريدك الإلكتروني');
     }
 }

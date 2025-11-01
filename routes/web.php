@@ -70,6 +70,11 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/reset-password/{token}', [AuthController::class, 'showPasswordReset'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+    // Verification Routes
+    Route::get('/verification', [AuthController::class, 'showVerificationForm'])->name('verification.show');
+    Route::post('/verification', [AuthController::class, 'verify'])->name('verification.verify');
+    Route::post('/verification/resend', [AuthController::class, 'resendVerificationCode'])->name('verification.resend');
 });
 
 Route::middleware('auth')->group(function () {
@@ -79,8 +84,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change.update');
 });
 
-// Dashboard Routes
-Route::middleware(['auth', 'track.session'])->prefix('dashboard')->name('dashboard.')->group(function () {
+// Dashboard Routes - Only for admin, manager, and employee
+Route::middleware(['auth', 'track.session', 'role:admin,manager,employee'])->prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
 
     // Reports Routes

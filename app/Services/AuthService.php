@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\VerificationCode;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AuthService
@@ -111,7 +113,7 @@ class AuthService
     /**
      * Update user's last login information.
      */
-    private function updateLastLogin(User $user): void
+    public function updateLastLogin(User $user): void
     {
         $user->update([
             'last_login_at' => now(),
@@ -213,5 +215,69 @@ class AuthService
         }
 
         return '/';
+    }
+
+    /**
+     * Generate and send verification code.
+     */
+    public function generateAndSendVerificationCode(User $user, string $type = 'login'): VerificationCode
+    {
+        // Deactivate all previous unverified codes for this user and type
+        VerificationCode::where('user_id', $user->id)
+            ->where('type', $type)
+            ->where('verified', false)
+            ->update(['verified' => true]);
+
+        // Generate 6-digit code
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Create verification code record
+        $verificationCode = VerificationCode::create([
+            'user_id' => $user->id,
+            'code' => $code,
+            'type' => $type,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'verified' => false,
+            'expires_at' => now()->addMinutes(10), // Code expires in 10 minutes
+            'ip_address' => request()->ip(),
+        ]);
+
+        // Send verification code via email
+        Mail::to($user->email)->send(
+            new \App\Mail\VerificationCodeMail($user, $code, $type)
+        );
+
+        return $verificationCode;
+    }
+
+    /**
+     * Verify verification code.
+     */
+    public function verifyCode(User $user, string $code, string $type = 'login'): bool
+    {
+        $verificationCode = VerificationCode::where('user_id', $user->id)
+            ->where('code', $code)
+            ->where('type', $type)
+            ->where('verified', false)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$verificationCode) {
+            return false;
+        }
+
+        // Mark code as verified
+        $verificationCode->markAsVerified();
+
+        return true;
+    }
+
+    /**
+     * Resend verification code.
+     */
+    public function resendVerificationCode(User $user, string $type = 'login'): VerificationCode
+    {
+        return $this->generateAndSendVerificationCode($user, $type);
     }
 }

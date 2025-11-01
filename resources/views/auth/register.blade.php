@@ -58,10 +58,49 @@
                 <!-- Phone -->
                 <div>
                     <label for="phone" class="block text-sm font-semibold text-gray-300 mb-2">رقم الهاتف (اختياري)</label>
-                    <input id="phone" name="phone" type="tel"
-                           value="{{ old('phone') }}"
-                           class="w-full px-4 py-3 bg-[#0F0F0F] border border-purple-500/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                           placeholder="05xxxxxxxx">
+                    <div class="flex gap-2">
+                        <!-- Country Code -->
+                        <div class="w-32">
+                            <select id="country_code" name="country_code" 
+                                    class="w-full px-4 py-3 bg-[#0F0F0F] border border-purple-500/20 rounded-xl text-white focus:outline-none focus:border-purple-500 transition-colors">
+                                <option value="+966" {{ old('country_code', '+966') == '+966' ? 'selected' : '' }}>🇸🇦 +966</option>
+                                <option value="+971" {{ old('country_code') == '+971' ? 'selected' : '' }}>🇦🇪 +971</option>
+                                <option value="+965" {{ old('country_code') == '+965' ? 'selected' : '' }}>🇰🇼 +965</option>
+                                <option value="+974" {{ old('country_code') == '+974' ? 'selected' : '' }}>🇶🇦 +974</option>
+                                <option value="+968" {{ old('country_code') == '+968' ? 'selected' : '' }}>🇴🇲 +968</option>
+                                <option value="+973" {{ old('country_code') == '+973' ? 'selected' : '' }}>🇧🇭 +973</option>
+                                <option value="+961" {{ old('country_code') == '+961' ? 'selected' : '' }}>🇱🇧 +961</option>
+                                <option value="+962" {{ old('country_code') == '+962' ? 'selected' : '' }}>🇯🇴 +962</option>
+                                <option value="+20" {{ old('country_code') == '+20' ? 'selected' : '' }}>🇪🇬 +20</option>
+                                <option value="+212" {{ old('country_code') == '+212' ? 'selected' : '' }}>🇲🇦 +212</option>
+                                <option value="+1" {{ old('country_code') == '+1' ? 'selected' : '' }}>🇺🇸 +1</option>
+                                <option value="+44" {{ old('country_code') == '+44' ? 'selected' : '' }}>🇬🇧 +44</option>
+                                <option value="+33" {{ old('country_code') == '+33' ? 'selected' : '' }}>🇫🇷 +33</option>
+                                <option value="+49" {{ old('country_code') == '+49' ? 'selected' : '' }}>🇩🇪 +49</option>
+                                <option value="+39" {{ old('country_code') == '+39' ? 'selected' : '' }}>🇮🇹 +39</option>
+                                <option value="+34" {{ old('country_code') == '+34' ? 'selected' : '' }}>🇪🇸 +34</option>
+                                <option value="+90" {{ old('country_code') == '+90' ? 'selected' : '' }}>🇹🇷 +90</option>
+                                <option value="+91" {{ old('country_code') == '+91' ? 'selected' : '' }}>🇮🇳 +91</option>
+                                <option value="+86" {{ old('country_code') == '+86' ? 'selected' : '' }}>🇨🇳 +86</option>
+                                <option value="+81" {{ old('country_code') == '+81' ? 'selected' : '' }}>🇯🇵 +81</option>
+                                <option value="+82" {{ old('country_code') == '+82' ? 'selected' : '' }}>🇰🇷 +82</option>
+                                <option value="+60" {{ old('country_code') == '+60' ? 'selected' : '' }}>🇲🇾 +60</option>
+                                <option value="+65" {{ old('country_code') == '+65' ? 'selected' : '' }}>🇸🇬 +65</option>
+                                <option value="+62" {{ old('country_code') == '+62' ? 'selected' : '' }}>🇮🇩 +62</option>
+                                <option value="+66" {{ old('country_code') == '+66' ? 'selected' : '' }}>🇹🇭 +66</option>
+                                <option value="+84" {{ old('country_code') == '+84' ? 'selected' : '' }}>🇻🇳 +84</option>
+                                <option value="+63" {{ old('country_code') == '+63' ? 'selected' : '' }}>🇵🇭 +63</option>
+                            </select>
+                        </div>
+                        <!-- Phone Number -->
+                        <div class="flex-1">
+                            <input id="phone_number" name="phone_number" type="tel"
+                                   value="{{ old('phone_number') }}"
+                                   class="w-full px-4 py-3 bg-[#0F0F0F] border border-purple-500/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                                   placeholder="5xxxxxxxx">
+                            <input type="hidden" id="phone" name="phone" value="{{ old('phone') }}">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Password -->
@@ -105,4 +144,40 @@
         </p>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const countryCodeSelect = document.getElementById('country_code');
+    const phoneNumberInput = document.getElementById('phone_number');
+    const phoneHiddenInput = document.getElementById('phone');
+    
+    // Function to combine country code and phone number
+    function updatePhoneValue() {
+        const countryCode = countryCodeSelect.value;
+        const phoneNumber = phoneNumberInput.value.trim();
+        
+        if (phoneNumber) {
+            // Remove leading zeros and spaces
+            let cleanPhone = phoneNumber.replace(/^0+/, '').replace(/\s+/g, '');
+            // Combine country code with phone number
+            phoneHiddenInput.value = countryCode + cleanPhone;
+        } else {
+            phoneHiddenInput.value = '';
+        }
+    }
+    
+    // Update phone value on input change
+    phoneNumberInput.addEventListener('input', function() {
+        // Only allow numbers
+        this.value = this.value.replace(/[^0-9]/g, '');
+        updatePhoneValue();
+    });
+    
+    // Update phone value when country code changes
+    countryCodeSelect.addEventListener('change', updatePhoneValue);
+    
+    // Initialize on page load
+    updatePhoneValue();
+});
+</script>
 @endsection
