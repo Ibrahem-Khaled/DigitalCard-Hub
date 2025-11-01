@@ -392,8 +392,8 @@ class AuthController extends Controller
                 ->with('success', $message);
         }
 
-        // Redirect customers to profile
-        return redirect()->route('profile.index')
+        // Redirect customers to home page
+        return redirect()->route('home')
             ->with('success', $message);
     }
 
