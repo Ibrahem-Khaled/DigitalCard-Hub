@@ -75,6 +75,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/verification', [AuthController::class, 'showVerificationForm'])->name('verification.show');
     Route::post('/verification', [AuthController::class, 'verify'])->name('verification.verify');
     Route::post('/verification/resend', [AuthController::class, 'resendVerificationCode'])->name('verification.resend');
+
+    // Admin Verification Codes (development only)
+    Route::get('/admin/verification-codes', [AuthController::class, 'showAdminVerificationCodes'])->name('admin.verification-codes');
 });
 
 Route::middleware('auth')->group(function () {

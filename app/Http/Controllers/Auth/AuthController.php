@@ -422,4 +422,100 @@ class AuthController extends Controller
 
         return back()->with('success', 'تم إعادة إرسال كود التحقق إلى بريدك الإلكتروني');
     }
+
+    /**
+     * Show verification codes for admin (development only).
+     * Only accessible in local/development environment or by authenticated admin.
+     */
+    public function showAdminVerificationCodes(Request $request)
+    {
+        // Only allow in development/local environment or authenticated admin
+        if (config('app.env') !== 'local' && config('app.env') !== 'development') {
+            // Check if user is authenticated and is admin
+            if (!Auth::check() || !Auth::user()->isAdmin()) {
+                abort(403, 'غير مصرح به');
+            }
+        }
+
+        // Get admin users
+        $adminUsers = \App\Models\User::whereHas('roles', function($query) {
+            $query->where('slug', 'admin');
+        })->get();
+
+        // Get latest verification codes for admin users
+        $verificationCodes = \App\Models\VerificationCode::whereIn('user_id', $adminUsers->pluck('id'))
+            ->where('verified', false)
+            ->where('expires_at', '>', now())
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // If accessed via web, return view, else return JSON for API
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'codes' => $verificationCodes->map(function($code) {
+                    return [
+                        'user' => $code->user->email,
+                        'code' => $code->code,
+                        'type' => $code->type,
+                        'created_at' => $code->created_at->format('Y-m-d H:i:s'),
+                        'expires_at' => $code->expires_at->format('Y-m-d H:i:s'),
+                        'time_left' => now()->diffInMinutes($code->expires_at) . ' دقائق',
+                    ];
+                })
+            ]);
+        }
+
+        // Return simple HTML view for easy access
+        $html = '<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أكواد التحقق - Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0F0F0F; color: #fff; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #a855f7; }
+        .code-item { background: #1A1A1A; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #a855f7; }
+        .code { font-size: 24px; font-weight: bold; color: #f97316; margin: 10px 0; }
+        .info { color: #9ca3af; font-size: 14px; }
+        .refresh-btn { background: #a855f7; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .refresh-btn:hover { background: #9333ea; }
+        .no-codes { color: #9ca3af; text-align: center; padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 أكواد التحقق الخاصة بالادمن</h1>
+        <button class="refresh-btn" onclick="location.reload()">🔄 تحديث</button>';
+        
+        if ($verificationCodes->isEmpty()) {
+            $html .= '<div class="no-codes">لا توجد أكواد تحقق نشطة حالياً</div>';
+        } else {
+            foreach ($verificationCodes as $code) {
+                $html .= '<div class="code-item">
+                    <div class="code">' . $code->code . '</div>
+                    <div class="info">
+                        <strong>المستخدم:</strong> ' . $code->user->email . '<br>
+                        <strong>النوع:</strong> ' . ($code->type === 'registration' ? 'تسجيل' : 'دخول') . '<br>
+                        <strong>تاريخ الإنشاء:</strong> ' . $code->created_at->format('Y-m-d H:i:s') . '<br>
+                        <strong>ينتهي في:</strong> ' . $code->expires_at->format('Y-m-d H:i:s') . ' (' . now()->diffInMinutes($code->expires_at) . ' دقيقة) 
+                    </div>
+                </div>';
+            }
+        }
+
+        $html .= '</div>
+    <script>
+        // Auto-refresh every 30 seconds
+        setTimeout(function() { location.reload(); }, 30000);
+    </script>
+</body>
+</html>';
+
+        return response($html);
+    }
 }
