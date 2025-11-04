@@ -17,10 +17,10 @@
                 <i class="bi bi-download me-1"></i>
                 تصدير
             </a>
-            <a href="{{ route('dashboard.contacts.stats') }}" class="btn btn-outline-info">
+            {{-- <a href="{{ route('dashboard.contacts.stats') }}" class="btn btn-outline-info">
                 <i class="bi bi-graph-up me-1"></i>
                 الإحصائيات
-            </a>
+            </a> --}}
         </div>
     </div>
 </div>

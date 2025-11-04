@@ -18,7 +18,7 @@
         {{-- الجانب الأيمن --}}
         <div class="header-right">
             {{-- شريط البحث --}}
-            <div class="search-container">
+            {{-- <div class="search-container">
                 <div class="search-box">
                     <i class="bi bi-search search-icon"></i>
                     <input type="text" class="search-input" placeholder="البحث...">
@@ -26,10 +26,10 @@
                         <i class="bi bi-arrow-left"></i>
                     </button>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- الإشعارات --}}
-            <div class="notifications-container">
+            {{-- <div class="notifications-container">
                 <div class="dropdown notifications-dropdown">
                     <button class="notification-btn" type="button" data-bs-toggle="dropdown">
                         <i class="bi bi-bell"></i>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- قائمة المستخدم --}}
             <div class="user-container">

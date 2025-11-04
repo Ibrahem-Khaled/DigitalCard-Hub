@@ -24,6 +24,29 @@
             <span class="text-white font-medium">{{ $product->name }}</span>
         </nav>
 
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <ul class="text-red-400 space-y-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Product Details -->
         <div class="grid lg:grid-cols-2 gap-12 mb-20">
             <!-- Product Images -->
@@ -277,9 +300,86 @@
                     </div>
                 </div>
 
+                <!-- Add Review Form -->
+                @auth
+                    @if($hasPurchased && !$existingReview)
+                    <div class="mb-8 p-6 bg-gradient-to-r from-purple-500/10 to-orange-500/10 rounded-xl border border-purple-500/20">
+                        <h3 class="text-xl font-bold text-white mb-4">أضف تقييمك</h3>
+                        <form action="{{ route('reviews.store', $product) }}" method="POST" id="reviewForm">
+                            @csrf
+                            <div class="mb-4">
+                                <label class="block text-sm font-semibold text-gray-300 mb-2">التقييم</label>
+                                <div class="flex items-center gap-2" id="ratingStars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <svg class="w-8 h-8 cursor-pointer star-rating text-gray-600 hover:text-orange-500 transition-colors" 
+                                             data-rating="{{ $i }}" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                    @endfor
+                                </div>
+                                <input type="hidden" name="rating" id="ratingValue" value="0" required>
+                                @error('rating')
+                                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="review_title" class="block text-sm font-semibold text-gray-300 mb-2">عنوان التقييم (اختياري)</label>
+                                <input type="text" name="title" id="review_title" 
+                                       class="w-full px-4 py-3 bg-[#0F0F0F] border border-purple-500/20 rounded-xl text-white focus:outline-none focus:border-purple-500" 
+                                       placeholder="اكتب عنواناً للتقييم">
+                                @error('title')
+                                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="review_comment" class="block text-sm font-semibold text-gray-300 mb-2">التعليق</label>
+                                <textarea name="comment" id="review_comment" rows="4" 
+                                          class="w-full px-4 py-3 bg-[#0F0F0F] border border-purple-500/20 rounded-xl text-white focus:outline-none focus:border-purple-500 resize-none" 
+                                          placeholder="شارك تجربتك مع هذا المنتج..."></textarea>
+                                @error('comment')
+                                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <button type="submit" 
+                                    class="px-6 py-3 bg-gradient-to-r from-purple-500 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
+                                    onclick="if(document.getElementById('ratingValue').value == 0) { alert('يرجى اختيار تقييم'); return false; }">
+                                إرسال التقييم
+                            </button>
+                        </form>
+                    </div>
+                    @elseif($hasPurchased && $existingReview)
+                    <div class="mb-8 p-6 bg-[#1A1A1A] rounded-xl border border-purple-500/20">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-white">تقييمك</h3>
+                            <form action="{{ route('reviews.destroy', $existingReview) }}" method="POST" class="inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا التقييم؟')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-400 hover:text-red-300 text-sm">حذف التقييم</button>
+                            </form>
+                        </div>
+                        <div class="flex items-center gap-2 mb-2">
+                            @for($i = 1; $i <= 5; $i++)
+                                <svg class="w-5 h-5 {{ $i <= $existingReview->rating ? 'text-orange-500' : 'text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            @endfor
+                        </div>
+                        @if($existingReview->title)
+                            <h4 class="text-white font-semibold mb-2">{{ $existingReview->title }}</h4>
+                        @endif
+                        @if($existingReview->comment)
+                            <p class="text-gray-300">{{ $existingReview->comment }}</p>
+                        @endif
+                    </div>
+                    @endif
+                @endauth
+
                 <!-- Reviews List -->
                 <div class="space-y-6">
-                    @forelse($product->reviews as $review)
+                    @forelse($product->reviews->where('is_approved', true) as $review)
                     <div class="p-6 bg-[#1A1A1A] rounded-xl border border-purple-500/20">
                         <div class="flex items-start gap-4">
                             <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-orange-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
@@ -336,6 +436,45 @@
 function changeImage(src) {
     document.getElementById('mainImage').src = src;
 }
+
+// Rating Stars Interaction
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-rating');
+    const ratingValue = document.getElementById('ratingValue');
+    
+    if (stars.length > 0 && ratingValue) {
+        let currentRating = 0;
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                currentRating = parseInt(this.dataset.rating);
+                ratingValue.value = currentRating;
+                updateStars(currentRating);
+            });
+            
+            star.addEventListener('mouseenter', function() {
+                const hoverRating = parseInt(this.dataset.rating);
+                updateStars(hoverRating);
+            });
+        });
+        
+        document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+            updateStars(currentRating);
+        });
+        
+        function updateStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('text-gray-600');
+                    star.classList.add('text-orange-500');
+                } else {
+                    star.classList.remove('text-orange-500');
+                    star.classList.add('text-gray-600');
+                }
+            });
+        }
+    }
+});
 
 function showTab(tab) {
     // Hide all tabs

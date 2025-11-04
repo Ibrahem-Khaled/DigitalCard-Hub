@@ -85,25 +85,45 @@ class ProductController extends Controller
             ->take(4)
             ->get();
 
-        // حساب متوسط التقييم
-        $averageRating = $product->reviews()->avg('rating') ?? 0;
-        $totalReviews = $product->reviews()->count();
+        // حساب متوسط التقييم (التقييمات المعتمدة فقط)
+        $averageRating = $product->reviews()->where('is_approved', true)->avg('rating') ?? 0;
+        $totalReviews = $product->reviews()->where('is_approved', true)->count();
 
-        // حساب توزيع التقييمات
+        // حساب توزيع التقييمات (التقييمات المعتمدة فقط)
         $ratingDistribution = [
-            5 => $product->reviews()->where('rating', 5)->count(),
-            4 => $product->reviews()->where('rating', 4)->count(),
-            3 => $product->reviews()->where('rating', 3)->count(),
-            2 => $product->reviews()->where('rating', 2)->count(),
-            1 => $product->reviews()->where('rating', 1)->count(),
+            5 => $product->reviews()->where('is_approved', true)->where('rating', 5)->count(),
+            4 => $product->reviews()->where('is_approved', true)->where('rating', 4)->count(),
+            3 => $product->reviews()->where('is_approved', true)->where('rating', 3)->count(),
+            2 => $product->reviews()->where('is_approved', true)->where('rating', 2)->count(),
+            1 => $product->reviews()->where('is_approved', true)->where('rating', 1)->count(),
         ];
+
+        // التحقق من أن المستخدم قد اشترى المنتج
+        $hasPurchased = false;
+        $existingReview = null;
+        if (auth()->check()) {
+            $hasPurchased = \App\Models\OrderItem::whereHas('order', function($query) {
+                $query->where('user_id', auth()->id())
+                      ->whereIn('status', ['delivered', 'shipped', 'processing', 'pending']);
+            })
+            ->where('product_id', $product->id)
+            ->exists();
+
+            if ($hasPurchased) {
+                $existingReview = \App\Models\ProductReview::where('user_id', auth()->id())
+                    ->where('product_id', $product->id)
+                    ->first();
+            }
+        }
 
         return view('products.show', compact(
             'product',
             'similarProducts',
             'averageRating',
             'totalReviews',
-            'ratingDistribution'
+            'ratingDistribution',
+            'hasPurchased',
+            'existingReview'
         ));
     }
 }

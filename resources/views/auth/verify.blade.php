@@ -62,6 +62,19 @@
                     </ul>
                 </div>
 
+                <!-- Countdown Timer -->
+                @if(isset($expiresAt))
+                <div id="countdown-container" class="p-4 bg-gradient-to-r from-purple-500/10 to-orange-500/10 border border-purple-500/20 rounded-xl">
+                    <div class="flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-gray-300 text-sm">الوقت المتبقي:</span>
+                        <span id="countdown" class="text-2xl font-bold text-purple-400">--:--</span>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Submit -->
                 <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-orange-500 text-white py-4 rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105">
                     التحقق من الكود
@@ -107,6 +120,57 @@
                 }
             });
         }
+
+        // Countdown Timer
+        @if(isset($expiresAt))
+        const expiresAt = {{ $expiresAt }}; // Unix timestamp in seconds
+        const countdownElement = document.getElementById('countdown');
+        const countdownContainer = document.getElementById('countdown-container');
+
+        function updateCountdown() {
+            const now = Math.floor(Date.now() / 1000); // Current time in seconds
+            const remaining = expiresAt - now;
+
+            if (remaining <= 0) {
+                countdownElement.textContent = '00:00';
+                countdownElement.classList.remove('text-purple-400');
+                countdownElement.classList.add('text-red-500');
+                countdownContainer.classList.remove('from-purple-500/10', 'to-orange-500/10', 'border-purple-500/20');
+                countdownContainer.classList.add('bg-red-500/10', 'border-red-500/20');
+                countdownContainer.querySelector('p')?.remove();
+                const warning = document.createElement('p');
+                warning.className = 'text-red-400 text-sm text-center mt-2';
+                warning.textContent = '⚠️ انتهت صلاحية الكود. يرجى طلب كود جديد';
+                countdownContainer.appendChild(warning);
+                return;
+            }
+
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+
+            // Format with leading zeros
+            const formattedMinutes = String(minutes).padStart(2, '0');
+            const formattedSeconds = String(seconds).padStart(2, '0');
+
+            countdownElement.textContent = formattedMinutes + ':' + formattedSeconds;
+
+            // Change color when less than 1 minute remaining
+            if (remaining < 60) {
+                countdownElement.classList.remove('text-purple-400');
+                countdownElement.classList.add('text-red-500');
+            } else if (remaining < 180) { // Less than 3 minutes
+                countdownElement.classList.remove('text-purple-400');
+                countdownElement.classList.add('text-orange-400');
+            } else {
+                countdownElement.classList.remove('text-red-500', 'text-orange-400');
+                countdownElement.classList.add('text-purple-400');
+            }
+        }
+
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        @endif
     });
 </script>
 @endsection

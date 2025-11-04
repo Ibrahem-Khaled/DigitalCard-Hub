@@ -219,8 +219,10 @@ class AuthController extends Controller
         if ($user) {
             $token = $this->authService->generatePasswordResetToken($user);
 
-            // Send reset email (you can implement this later)
-            // Mail::to($user->email)->send(new PasswordResetMail($token));
+            // Send reset email
+            Mail::to($user->email)->send(
+                new \App\Mail\PasswordResetMail($user, $token)
+            );
 
             return back()->with('success', 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
         }
@@ -330,7 +332,17 @@ class AuthController extends Controller
                 ->withErrors(['error' => 'المستخدم غير موجود']);
         }
 
-        return view('auth.verify', compact('user', 'type'));
+        // Get the latest unverified verification code for this user
+        $verificationCode = \App\Models\VerificationCode::where('user_id', $user->id)
+            ->where('type', $type)
+            ->where('verified', false)
+            ->where('expires_at', '>', now())
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $expiresAt = $verificationCode ? $verificationCode->expires_at->timestamp : null;
+
+        return view('auth.verify', compact('user', 'type', 'expiresAt'));
     }
 
     /**

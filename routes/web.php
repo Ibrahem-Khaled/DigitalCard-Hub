@@ -57,6 +57,13 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::get('/referrals', [App\Http\Controllers\ProfileController::class, 'referrals'])->name('referrals');
 });
 
+// Product Reviews Routes (Requires Auth)
+Route::middleware('auth')->prefix('reviews')->name('reviews.')->group(function () {
+    Route::post('/products/{product}', [App\Http\Controllers\ProductReviewController::class, 'store'])->name('store');
+    Route::put('/{review}', [App\Http\Controllers\ProductReviewController::class, 'update'])->name('update');
+    Route::delete('/{review}', [App\Http\Controllers\ProductReviewController::class, 'destroy'])->name('destroy');
+});
+
 // Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

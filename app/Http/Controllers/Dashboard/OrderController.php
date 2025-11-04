@@ -8,11 +8,13 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\LoyaltyPoint;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -246,6 +248,16 @@ class OrderController extends Controller
                     'status' => 'successful',
                     'processed_at' => now(),
                 ]);
+
+                // إضافة نقاط الولاء للمستخدم
+                if ($order->user_id) {
+                    try {
+                        LoyaltyPoint::addPointsForPurchase($order->user_id, $totalAmount, $order->id);
+                        Log::info("Loyalty points added for order {$order->order_number} via admin create");
+                    } catch (\Exception $e) {
+                        Log::error('Error adding loyalty points: ' . $e->getMessage());
+                    }
+                }
             }
 
             DB::commit();
@@ -340,10 +352,29 @@ class OrderController extends Controller
             'notes' => 'nullable|string'
         ]);
 
+        $previousPaymentStatus = $order->payment_status;
         $order->updatePaymentStatus($request->payment_status);
 
         if ($request->notes) {
             $order->update(['notes' => $request->notes]);
+        }
+
+        // إضافة نقاط الولاء عند تغيير حالة الدفع إلى "مدفوع"
+        if ($request->payment_status === 'paid' && $previousPaymentStatus !== 'paid' && $order->user_id) {
+            try {
+                // التحقق من عدم إضافة نقاط مسبقاً لهذا الطلب
+                $existingPoints = LoyaltyPoint::where('user_id', $order->user_id)
+                    ->where('source', 'purchase')
+                    ->where('source_id', $order->id)
+                    ->first();
+
+                if (!$existingPoints) {
+                    LoyaltyPoint::addPointsForPurchase($order->user_id, $order->total_amount, $order->id);
+                    Log::info("Loyalty points added for order {$order->order_number} via admin update");
+                }
+            } catch (\Exception $e) {
+                Log::error('Error adding loyalty points: ' . $e->getMessage());
+            }
         }
 
         return redirect()->back()->with('success', 'تم تحديث حالة الدفع بنجاح.');

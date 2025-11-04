@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\LoyaltyPoint;
 use App\Mail\DigitalCardsEmail;
 use Exception;
 
@@ -204,6 +205,24 @@ class AmwalPayController extends Controller
 
                         // Clear cache
                         Cache::forget("order_cards_{$order->id}");
+                    }
+
+                    // إضافة نقاط الولاء للمستخدم (إذا كان مسجل دخول)
+                    if ($order->user_id) {
+                        try {
+                            // التحقق من عدم إضافة نقاط مسبقاً لهذا الطلب
+                            $existingPoints = LoyaltyPoint::where('user_id', $order->user_id)
+                                ->where('source', 'purchase')
+                                ->where('source_id', $order->id)
+                                ->first();
+
+                            if (!$existingPoints) {
+                                LoyaltyPoint::addPointsForPurchase($order->user_id, $order->total_amount, $order->id);
+                                Log::info("Loyalty points added for order {$order->order_number}");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('Error adding loyalty points: ' . $e->getMessage());
+                        }
                     }
 
                     return redirect()->route('checkout.success', $order->id)

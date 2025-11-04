@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\DigitalCard;
+use App\Models\LoyaltyPoint;
 use App\Mail\DigitalCardsEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -192,8 +193,33 @@ class CheckoutController extends Controller
                     // تحديث حالة الطلب إلى تمت المعالجة
                     $order->update([
                         'status' => 'processing',
+                        'payment_status' => 'paid',
                         'processed_at' => now()
                     ]);
+
+                    // تحديث حالة الدفع
+                    $payment->update([
+                        'status' => 'successful',
+                        'processed_at' => now()
+                    ]);
+
+                    // إضافة نقاط الولاء للمستخدم (إذا كان مسجل دخول)
+                    if ($order->user_id) {
+                        try {
+                            // التحقق من عدم إضافة نقاط مسبقاً لهذا الطلب
+                            $existingPoints = LoyaltyPoint::where('user_id', $order->user_id)
+                                ->where('source', 'purchase')
+                                ->where('source_id', $order->id)
+                                ->first();
+
+                            if (!$existingPoints) {
+                                LoyaltyPoint::addPointsForPurchase($order->user_id, $order->total_amount, $order->id);
+                                Log::info("Loyalty points added for order {$order->order_number}");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('Error adding loyalty points: ' . $e->getMessage());
+                        }
+                    }
 
                     Log::info("Digital cards email sent successfully to {$customerEmail} for order {$order->order_number}");
                 } catch (\Exception $e) {

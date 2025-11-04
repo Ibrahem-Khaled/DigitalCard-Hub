@@ -1145,6 +1145,40 @@
 }
 
 /* ========================================
+   محاذاة العناوين والنصوص لليمين
+   ======================================== */
+
+.page-title,
+.page-subtitle,
+.card-title,
+.card-header h5,
+.card-header .card-title,
+h1, h2, h3, h4, h5, h6,
+.stats-card-title,
+.table-title,
+.section-title,
+.section-header h3,
+.section-header h4,
+.section-header h5 {
+    text-align: right !important;
+    direction: rtl;
+}
+
+.card-header,
+.page-header,
+.section-header {
+    text-align: right !important;
+    direction: rtl;
+}
+
+.card-body,
+.page-content,
+.section-content {
+    text-align: right !important;
+    direction: rtl;
+}
+
+/* ========================================
    أنماط إضافية للجداول
    ======================================== */
 
@@ -1309,4 +1343,38 @@
 .stats-card .badge-info {
     background-color: var(--info-color);
     color: white;
+}
+
+/* ========================================
+   محاذاة العناوين والنصوص لليمين
+   ======================================== */
+
+.page-title,
+.page-subtitle,
+.card-title,
+.card-header h5,
+.card-header .card-title,
+h1, h2, h3, h4, h5, h6,
+.stats-card-title,
+.table-title,
+.section-title,
+.section-header h3,
+.section-header h4,
+.section-header h5 {
+    text-align: right !important;
+    direction: rtl;
+}
+
+.card-header,
+.page-header,
+.section-header {
+    text-align: right !important;
+    direction: rtl;
+}
+
+.card-body,
+.page-content,
+.section-content {
+    text-align: right !important;
+    direction: rtl;
 }

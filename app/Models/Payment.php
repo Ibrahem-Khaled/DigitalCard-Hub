@@ -184,6 +184,10 @@ class Payment extends Model
      */
     public function getPaymentGatewayInArabic(): string
     {
+        if (!$this->payment_gateway) {
+            return 'غير محدد';
+        }
+
         return match($this->payment_gateway) {
             'stripe' => 'سترايب',
             'paypal' => 'باي بال',
@@ -193,7 +197,8 @@ class Payment extends Model
             'tap' => 'تاب',
             'fawry' => 'فوري',
             'valu' => 'فاليو',
-            default => $this->payment_gateway
+            'amwalpay' => 'أموال باي',
+            default => $this->payment_gateway ?? 'غير محدد'
         };
     }
 

@@ -177,6 +177,7 @@
             <div class="card-body">
                 <form action="{{ route('dashboard.orders.update-status', $order) }}" method="POST" class="mb-3">
                     @csrf
+                    @method('PATCH')
                     <div class="mb-3">
                         <label for="status" class="form-label">حالة الطلب</label>
                         <select class="form-select" id="status" name="status">
@@ -193,6 +194,7 @@
 
                 <form action="{{ route('dashboard.orders.update-payment-status', $order) }}" method="POST">
                     @csrf
+                    @method('PATCH')
                     <div class="mb-3">
                         <label for="payment_status" class="form-label">حالة الدفع</label>
                         <select class="form-select" id="payment_status" name="payment_status">
