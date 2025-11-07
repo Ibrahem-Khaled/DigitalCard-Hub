@@ -193,7 +193,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $loyaltyPoints = $user->loyaltyPoints()
-            ->with('loyaltyPointTransactions')
             ->latest()
             ->paginate(10);
 
