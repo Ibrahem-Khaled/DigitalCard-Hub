@@ -38,10 +38,26 @@ class CartController extends BaseController
             return $this->validationErrorResponse($validator->errors()->toArray());
         }
 
-        $product = Product::active()->findOrFail($request->product_id);
+        $product = Product::active()->withCount(['digitalCards as available_cards_count' => function($query) {
+            $query->where('is_used', false)
+                  ->where('status', 'active')
+                  ->where(function ($q) {
+                      $q->whereNull('expiry_date')
+                        ->orWhere('expiry_date', '>', now());
+                  });
+        }])->findOrFail($request->product_id);
 
-        if (!$product->is_in_stock) {
-            return $this->errorResponse('المنتج غير متوفر حالياً', 400);
+        // Check stock availability
+        if ($product->is_digital) {
+            // For digital products, check available cards
+            if ($product->available_cards_count < $request->quantity) {
+                return $this->errorResponse('الكمية المطلوبة غير متوفرة. المتوفر: ' . $product->available_cards_count, 400);
+            }
+        } else {
+            // For non-digital products, check if product is in stock
+            if (!$product->is_in_stock) {
+                return $this->errorResponse('المنتج غير متوفر حالياً', 400);
+            }
         }
 
         $cart = $this->getOrCreateCart($request->user());

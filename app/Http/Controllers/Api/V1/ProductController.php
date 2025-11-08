@@ -17,7 +17,16 @@ class ProductController extends BaseController
      */
     public function index(Request $request)
     {
-        $query = Product::active()->with('category');
+        $query = Product::active()
+            ->with('category')
+            ->withCount(['digitalCards as available_cards_count' => function($query) {
+                $query->where('is_used', false)
+                      ->where('status', 'active')
+                      ->where(function ($q) {
+                          $q->whereNull('expiry_date')
+                            ->orWhere('expiry_date', '>', now());
+                      });
+            }]);
 
         // Filter by category
         if ($request->has('category') && $request->category) {
@@ -28,10 +37,10 @@ class ProductController extends BaseController
 
         // Filter by price range
         if ($request->has('min_price') && $request->min_price) {
-            $query->where('current_price', '>=', $request->min_price);
+            $query->whereRaw('COALESCE(sale_price, price) >= ?', [$request->min_price]);
         }
         if ($request->has('max_price') && $request->max_price) {
-            $query->where('current_price', '<=', $request->max_price);
+            $query->whereRaw('COALESCE(sale_price, price) <= ?', [$request->max_price]);
         }
 
         // Search
@@ -56,10 +65,10 @@ class ProductController extends BaseController
         $sortBy = $request->get('sort', 'latest');
         switch ($sortBy) {
             case 'price_low':
-                $query->orderBy('current_price', 'asc');
+                $query->orderByRaw('COALESCE(sale_price, price) ASC');
                 break;
             case 'price_high':
-                $query->orderBy('current_price', 'desc');
+                $query->orderByRaw('COALESCE(sale_price, price) DESC');
                 break;
             case 'name':
                 $query->orderBy('name', 'asc');
@@ -89,6 +98,14 @@ class ProductController extends BaseController
             ->with(['category', 'reviews.user'])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
+            ->withCount(['digitalCards as available_cards_count' => function($query) {
+                $query->where('is_used', false)
+                      ->where('status', 'active')
+                      ->where(function ($q) {
+                          $q->whereNull('expiry_date')
+                            ->orWhere('expiry_date', '>', now());
+                      });
+            }])
             ->first();
 
         if (!$product) {

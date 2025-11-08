@@ -109,6 +109,40 @@ class Product extends Model
     }
 
     /**
+     * Get stock quantity (count of available digital cards).
+     */
+    public function getStockQuantityAttribute(): int
+    {
+        if ($this->is_digital) {
+            // Use withCount if available, otherwise count directly
+            if (isset($this->attributes['available_cards_count'])) {
+                return (int) $this->attributes['available_cards_count'];
+            }
+            return $this->digitalCards()->available()->count();
+        }
+        
+        // For non-digital products, return 0 or implement physical stock logic
+        return 0;
+    }
+
+    /**
+     * Check if product is in stock.
+     */
+    public function getIsInStockAttribute(): bool
+    {
+        if ($this->is_digital) {
+            // Use withCount if available, otherwise count directly
+            if (isset($this->attributes['available_cards_count'])) {
+                return (int) $this->attributes['available_cards_count'] > 0;
+            }
+            return $this->digitalCards()->available()->count() > 0;
+        }
+        
+        // For non-digital products, you can implement physical stock logic here
+        return true; // Default to true for non-digital products
+    }
+
+    /**
      * Check if product is on sale.
      */
     public function isOnSale(): bool
