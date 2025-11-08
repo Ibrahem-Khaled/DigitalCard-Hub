@@ -25,7 +25,7 @@ class OrderController extends BaseController
             ->latest()
             ->paginate(15);
 
-        return $this->paginatedResponse($orders);
+        return $this->paginatedResponse($orders, OrderResource::class);
     }
 
     /**
@@ -116,7 +116,7 @@ class OrderController extends BaseController
                     'product_id' => $cartItem->product_id,
                     'quantity' => $cartItem->quantity,
                     'price' => $cartItem->price,
-                    'subtotal' => $cartItem->subtotal,
+                    'total_price' => $cartItem->total_price,
                     'status' => 'pending',
                 ]);
 

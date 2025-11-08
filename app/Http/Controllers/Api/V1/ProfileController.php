@@ -63,7 +63,7 @@ class ProfileController extends BaseController
             ->latest()
             ->paginate(15);
 
-        return $this->paginatedResponse($orders);
+        return $this->paginatedResponse($orders, OrderResource::class);
     }
 
     /**
@@ -95,7 +95,7 @@ class ProfileController extends BaseController
             ->latest()
             ->paginate(15);
 
-        return $this->paginatedResponse($referrals);
+        return $this->paginatedResponse($referrals, \App\Http\Resources\Api\ReferralResource::class);
     }
 }
 

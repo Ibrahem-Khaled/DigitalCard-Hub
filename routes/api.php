@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\AIChatController;
 use App\Http\Controllers\Api\V1\SliderController;
 use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\HistoryController;
+use App\Http\Controllers\Api\V1\ReferralController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +126,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::prefix('loyalty-points')->name('loyalty-points.')->group(function () {
             Route::get('/', [LoyaltyPointController::class, 'index'])->name('index');
             Route::get('/transactions', [LoyaltyPointController::class, 'transactions'])->name('transactions');
+        });
+
+        // Referral Routes
+        Route::prefix('referrals')->name('referrals.')->group(function () {
+            Route::get('/code', [ReferralController::class, 'code'])->name('code');
+            Route::get('/', [ReferralController::class, 'index'])->name('index');
+            Route::get('/statistics', [ReferralController::class, 'statistics'])->name('statistics');
+            Route::get('/{referral}', [ReferralController::class, 'show'])->name('show');
         });
 
         // Notifications Routes
