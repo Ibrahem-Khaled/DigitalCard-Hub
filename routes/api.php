@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\SliderController;
 use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\HistoryController;
 use App\Http\Controllers\Api\V1\ReferralController;
+use App\Http\Controllers\Api\V1\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::get('/suggestions', [SearchController::class, 'suggestions'])->name('suggestions');
         Route::get('/popular', [SearchController::class, 'popular'])->name('popular');
     });
+
+    // Homepage Routes (Public)
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     // Protected Routes (Require Authentication)
     Route::middleware('auth:sanctum')->group(function () {
