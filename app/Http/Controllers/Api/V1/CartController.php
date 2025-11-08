@@ -51,14 +51,14 @@ class CartController extends BaseController
 
         if ($cartItem) {
             $cartItem->quantity += $request->quantity;
-            $cartItem->subtotal = $cartItem->quantity * $cartItem->price;
+            $cartItem->total_price = $cartItem->quantity * $cartItem->price;
             $cartItem->save();
         } else {
             $cart->items()->create([
                 'product_id' => $product->id,
                 'quantity' => $request->quantity,
                 'price' => $product->current_price,
-                'subtotal' => $request->quantity * $product->current_price,
+                'total_price' => $request->quantity * $product->current_price,
             ]);
         }
 
@@ -89,7 +89,7 @@ class CartController extends BaseController
         }
 
         $cartItem->quantity = $request->quantity;
-        $cartItem->subtotal = $cartItem->quantity * $cartItem->price;
+        $cartItem->total_price = $cartItem->quantity * $cartItem->price;
         $cartItem->save();
 
         $cart = $cartItem->cart;
@@ -125,11 +125,13 @@ class CartController extends BaseController
     {
         $cart = $this->getOrCreateCart($request->user());
         $cart->items()->delete();
-        $cart->coupon_id = null;
+        $cart->coupon_code = null;
         $cart->discount_amount = 0;
         $cart->save();
 
-        return $this->successResponse(null, 'تم تفريغ السلة بنجاح');
+        $cart->load(['items.product', 'coupon']);
+
+        return $this->successResponse(new CartResource($cart), 'تم تفريغ السلة بنجاح');
     }
 
     /**
@@ -171,7 +173,7 @@ class CartController extends BaseController
         // Calculate discount
         $discount = $coupon->calculateDiscount($subtotal);
 
-        $cart->coupon_id = $coupon->id;
+        $cart->coupon_code = $coupon->code;
         $cart->discount_amount = $discount;
         $cart->save();
 
@@ -186,7 +188,7 @@ class CartController extends BaseController
     public function removeCoupon(Request $request)
     {
         $cart = $this->getOrCreateCart($request->user());
-        $cart->coupon_id = null;
+        $cart->coupon_code = null;
         $cart->discount_amount = 0;
         $cart->save();
 
@@ -201,13 +203,13 @@ class CartController extends BaseController
     private function getOrCreateCart($user)
     {
         $cart = Cart::where('user_id', $user->id)
-            ->where('status', 'active')
+            ->where('is_abandoned', false)
             ->first();
 
         if (!$cart) {
             $cart = Cart::create([
                 'user_id' => $user->id,
-                'status' => 'active',
+                'is_abandoned' => false,
             ]);
         }
 

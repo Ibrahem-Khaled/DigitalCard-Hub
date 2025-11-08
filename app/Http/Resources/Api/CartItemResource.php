@@ -18,7 +18,7 @@ class CartItemResource extends JsonResource
             'id' => $this->id,
             'quantity' => $this->quantity,
             'price' => (float) $this->price,
-            'subtotal' => (float) $this->subtotal,
+            'subtotal' => (float) ($this->quantity * $this->price),
             'product' => $this->whenLoaded('product', function () {
                 return [
                     'id' => $this->product->id,

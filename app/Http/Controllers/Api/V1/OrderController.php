@@ -67,7 +67,7 @@ class OrderController extends BaseController
         }
 
         $cart = Cart::where('user_id', $request->user()->id)
-            ->where('status', 'active')
+            ->where('is_abandoned', false)
             ->with('items.product')
             ->first();
 
@@ -147,8 +147,9 @@ class OrderController extends BaseController
                 'currency' => 'OMR',
             ]);
 
-            // Update cart status
-            $cart->status = 'completed';
+            // Mark cart as abandoned (completed)
+            $cart->is_abandoned = true;
+            $cart->abandoned_at = now();
             $cart->save();
 
             DB::commit();
