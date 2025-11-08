@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\CouponController;
 use App\Http\Controllers\Api\V1\LoyaltyPointController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\AIChatController;
+use App\Http\Controllers\Api\V1\SliderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::prefix('ai-chat')->name('ai-chat.')->group(function () {
         Route::post('/chat', [AIChatController::class, 'chat'])->name('chat');
         Route::get('/product-suggestions', [AIChatController::class, 'getProductSuggestions'])->name('product-suggestions');
+    });
+
+    // Sliders Routes (Public)
+    Route::prefix('sliders')->name('sliders.')->group(function () {
+        Route::get('/', [SliderController::class, 'index'])->name('index');
+        Route::get('/homepage', [SliderController::class, 'homepage'])->name('homepage');
+        Route::get('/position/{position}', [SliderController::class, 'byPosition'])->name('by-position');
+        Route::get('/{id}', [SliderController::class, 'show'])->name('show');
     });
 
     // Protected Routes (Require Authentication)
@@ -126,4 +135,5 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         });
     });
 });
+
 

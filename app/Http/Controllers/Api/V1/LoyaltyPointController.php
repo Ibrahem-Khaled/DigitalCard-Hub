@@ -34,3 +34,4 @@ class LoyaltyPointController extends BaseController
     }
 }
 
+
