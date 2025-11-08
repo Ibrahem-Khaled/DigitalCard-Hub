@@ -84,7 +84,7 @@ class ProductController extends BaseController
         $perPage = $request->get('per_page', 15);
         $products = $query->paginate($perPage);
 
-        return $this->paginatedResponse($products);
+        return $this->paginatedResponse($products, ProductResource::class);
     }
 
     /**
@@ -149,7 +149,7 @@ class ProductController extends BaseController
             ->latest()
             ->paginate(15);
 
-        return $this->paginatedResponse($reviews);
+        return $this->paginatedResponse($reviews, ReviewResource::class);
     }
 
     /**
@@ -182,7 +182,7 @@ class ProductController extends BaseController
             'product_id' => $product->id,
             'rating' => $request->input('rating'),
             'comment' => $request->input('comment'),
-            'is_verified_purchase' => $product->orderItems()
+            'is_verified' => $product->orderItems()
                 ->whereHas('order', function($q) use ($request) {
                     $q->where('user_id', $request->user()->id)
                       ->where('payment_status', 'completed');

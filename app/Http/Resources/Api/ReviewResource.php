@@ -18,7 +18,7 @@ class ReviewResource extends JsonResource
             'id' => $this->id,
             'rating' => $this->rating,
             'comment' => $this->comment,
-            'is_verified_purchase' => $this->is_verified_purchase,
+            'is_verified_purchase' => $this->is_verified,
             'is_approved' => $this->is_approved,
             'user' => $this->whenLoaded('user', function () {
                 return [

@@ -15,9 +15,20 @@ class CategoryController extends BaseController
      */
     public function index(Request $request)
     {
-        $categories = Category::active()
-            ->orderBy('sort_order')
+        $type = $request->input('type', 'all'); // all, parent, child
+        
+        $query = Category::active()->orderBy('sort_order');
+        
+        if ($type === 'parent') {
+            $query->whereNull('parent_id');
+        } elseif ($type === 'child') {
+            $query->whereNotNull('parent_id');
+        }
+        
+        $categories = $query
             ->withCount('products')
+            ->with('parent')
+            ->withCount('children')
             ->get();
 
         return $this->successResponse(CategoryResource::collection($categories));
@@ -32,6 +43,8 @@ class CategoryController extends BaseController
             ->where('id', $id)
             ->orWhere('slug', $id)
             ->withCount('products')
+            ->with(['parent', 'children'])
+            ->withCount('children')
             ->first();
 
         if (!$category) {
@@ -55,16 +68,25 @@ class CategoryController extends BaseController
             return $this->notFoundResponse('الفئة غير موجودة');
         }
 
-        $query = $category->products()->active()->with('category');
+        $query = $category->products()->active()
+            ->with('category')
+            ->withCount(['digitalCards as available_cards_count' => function($query) {
+                $query->where('is_used', false)
+                      ->where('status', 'active')
+                      ->where(function ($q) {
+                          $q->whereNull('expiry_date')
+                            ->orWhere('expiry_date', '>', now());
+                      });
+            }]);
 
         // Sort
         $sortBy = $request->get('sort', 'latest');
         switch ($sortBy) {
             case 'price_low':
-                $query->orderBy('current_price', 'asc');
+                $query->orderByRaw('COALESCE(sale_price, price) ASC');
                 break;
             case 'price_high':
-                $query->orderBy('current_price', 'desc');
+                $query->orderByRaw('COALESCE(sale_price, price) DESC');
                 break;
             case 'name':
                 $query->orderBy('name', 'asc');
@@ -76,7 +98,7 @@ class CategoryController extends BaseController
         $perPage = $request->get('per_page', 15);
         $products = $query->paginate($perPage);
 
-        return $this->paginatedResponse($products);
+        return $this->paginatedResponse($products, ProductResource::class);
     }
 }
 
