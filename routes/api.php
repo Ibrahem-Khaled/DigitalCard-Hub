@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\V1\LoyaltyPointController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\AIChatController;
 use App\Http\Controllers\Api\V1\SliderController;
+use App\Http\Controllers\Api\V1\SearchController;
+use App\Http\Controllers\Api\V1\HistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +66,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::get('/homepage', [SliderController::class, 'homepage'])->name('homepage');
         Route::get('/position/{position}', [SliderController::class, 'byPosition'])->name('by-position');
         Route::get('/{id}', [SliderController::class, 'show'])->name('show');
+    });
+
+    // Search Routes (Public)
+    Route::prefix('search')->name('search.')->group(function () {
+        Route::get('/', [SearchController::class, 'search'])->name('search');
+        Route::get('/suggestions', [SearchController::class, 'suggestions'])->name('suggestions');
+        Route::get('/popular', [SearchController::class, 'popular'])->name('popular');
     });
 
     // Protected Routes (Require Authentication)
@@ -126,6 +135,20 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::put('/{notification}/read', [NotificationController::class, 'markAsRead'])->name('mark-read');
             Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
             Route::delete('/{notification}', [NotificationController::class, 'destroy'])->name('destroy');
+        });
+
+        // Search Routes (Protected)
+        Route::prefix('search')->name('search.')->group(function () {
+            Route::get('/history', [SearchController::class, 'history'])->name('history');
+            Route::delete('/history', [SearchController::class, 'clearHistory'])->name('clear-history');
+        });
+
+        // History Routes
+        Route::prefix('history')->name('history.')->group(function () {
+            Route::get('/', [HistoryController::class, 'index'])->name('index');
+            Route::get('/searches', [HistoryController::class, 'searches'])->name('searches');
+            Route::get('/orders', [HistoryController::class, 'orders'])->name('orders');
+            Route::delete('/', [HistoryController::class, 'clear'])->name('clear');
         });
 
         // Product Reviews (Authenticated)
