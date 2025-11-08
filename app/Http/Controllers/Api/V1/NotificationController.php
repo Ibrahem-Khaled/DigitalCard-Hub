@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Api\BaseController;
+use App\Http\Resources\Api\NotificationResource;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 
@@ -13,11 +14,25 @@ class NotificationController extends BaseController
      */
     public function index(Request $request)
     {
-        $notifications = Notification::where('user_id', $request->user()->id)
-            ->latest()
-            ->paginate(15);
+        $query = Notification::where('user_id', $request->user()->id);
 
-        return $this->paginatedResponse($notifications);
+        // Filter by type if provided
+        if ($request->has('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by read status
+        if ($request->has('read')) {
+            if ($request->read == 'true' || $request->read == '1') {
+                $query->whereNotNull('read_at');
+            } else {
+                $query->whereNull('read_at');
+            }
+        }
+
+        $notifications = $query->latest()->paginate(15);
+
+        return $this->paginatedResponse($notifications, NotificationResource::class);
     }
 
     /**
@@ -26,11 +41,23 @@ class NotificationController extends BaseController
     public function unread(Request $request)
     {
         $notifications = Notification::where('user_id', $request->user()->id)
-            ->where('is_read', false)
+            ->whereNull('read_at')
             ->latest()
             ->paginate(15);
 
-        return $this->paginatedResponse($notifications);
+        return $this->paginatedResponse($notifications, NotificationResource::class);
+    }
+
+    /**
+     * Get unread notifications count
+     */
+    public function unreadCount(Request $request)
+    {
+        $count = Notification::where('user_id', $request->user()->id)
+            ->whereNull('read_at')
+            ->count();
+
+        return $this->successResponse(['count' => $count]);
     }
 
     /**
@@ -46,9 +73,9 @@ class NotificationController extends BaseController
             return $this->notFoundResponse('الإشعار غير موجود');
         }
 
-        $notification->update(['is_read' => true]);
+        $notification->markAsRead();
 
-        return $this->successResponse(null, 'تم تحديد الإشعار كمقروء');
+        return $this->successResponse(new NotificationResource($notification), 'تم تحديد الإشعار كمقروء');
     }
 
     /**
@@ -57,8 +84,8 @@ class NotificationController extends BaseController
     public function markAllAsRead(Request $request)
     {
         Notification::where('user_id', $request->user()->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
 
         return $this->successResponse(null, 'تم تحديد جميع الإشعارات كمقروءة');
     }

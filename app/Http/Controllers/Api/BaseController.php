@@ -77,12 +77,19 @@ class BaseController extends Controller
     /**
      * Paginated response
      */
-    protected function paginatedResponse($data, string $message = 'تم جلب البيانات بنجاح'): JsonResponse
+    protected function paginatedResponse($data, $resourceClass = null, string $message = 'تم جلب البيانات بنجاح'): JsonResponse
     {
+        $items = $data->items();
+        
+        // Apply resource transformation if provided
+        if ($resourceClass && class_exists($resourceClass)) {
+            $items = $resourceClass::collection($items);
+        }
+
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data' => $data->items(),
+            'data' => $items,
             'meta' => [
                 'current_page' => $data->currentPage(),
                 'last_page' => $data->lastPage(),
