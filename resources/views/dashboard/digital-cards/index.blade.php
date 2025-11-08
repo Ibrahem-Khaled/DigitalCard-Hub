@@ -120,8 +120,11 @@
                                     <i class="bi bi-credit-card"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-0 font-monospace">{{ $card->card_code }}</h6>
-                                    <small class="text-muted">{{ $card->serial_number }}</small>
+                                    <h6 class="mb-0 text-muted">
+                                        <i class="bi bi-lock me-1"></i>
+                                        مخفي لأسباب أمنية
+                                    </h6>
+                                    <small class="text-muted">ID: #{{ $card->id }}</small>
                                 </div>
                             </div>
                         </td>

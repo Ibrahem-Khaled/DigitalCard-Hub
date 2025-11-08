@@ -337,26 +337,30 @@
                                         </div>
 
                                         <div class="card-details mt-3">
-                                            @if($card->card_code)
                                             <div class="detail-row mb-2">
                                                 <small class="text-muted d-block">كود البطاقة</small>
-                                                <code class="fs-6 fw-bold text-dark">{{ $card->card_code }}</code>
+                                                <div class="text-muted">
+                                                    <i class="bi bi-lock me-1"></i>
+                                                    مخفي لأسباب أمنية
+                                                </div>
+                                                <small class="text-muted">سيتم إرسال الأكواد للعميل فقط</small>
                                             </div>
-                                            @endif
 
-                                            @if($card->card_pin)
                                             <div class="detail-row mb-2">
                                                 <small class="text-muted d-block">رقم PIN</small>
-                                                <code class="fs-6 fw-bold text-dark">{{ $card->card_pin }}</code>
+                                                <div class="text-muted">
+                                                    <i class="bi bi-lock me-1"></i>
+                                                    مخفي لأسباب أمنية
+                                                </div>
                                             </div>
-                                            @endif
 
-                                            @if($card->card_number)
                                             <div class="detail-row mb-2">
                                                 <small class="text-muted d-block">رقم البطاقة</small>
-                                                <code class="fs-6 fw-bold text-dark">{{ $card->card_number }}</code>
+                                                <div class="text-muted">
+                                                    <i class="bi bi-lock me-1"></i>
+                                                    مخفي لأسباب أمنية
+                                                </div>
                                             </div>
-                                            @endif
 
                                             @if($card->serial_number)
                                             <div class="detail-row mb-2">

@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\LoyaltyPoint;
 use App\Mail\DigitalCardsEmail;
+use App\Services\CurrencyService;
 use Exception;
 
 class AmwalPayController extends Controller
@@ -50,17 +51,28 @@ class AmwalPayController extends Controller
                 $order = Order::find($request->order_id);
                 if ($order) {
                     $orderId = $order->id;
-                    $amount = (string) $order->total_amount;
+                    // Convert amount from USD to OMR for payment gateway
+                    $currencyService = app(CurrencyService::class);
+                    $amountInOMR = $currencyService->convert($order->total_amount, CurrencyService::PAYMENT_CURRENCY);
+                    $amount = (string) $amountInOMR;
                     $order_number = $order->order_number;
 
                     // Store in session for callback
                     session([
                         'order_id' => $order->id,
                         'order_number' => $order->order_number,
-                        'amount' => $order->total_amount,
+                        'amount' => $order->total_amount, // Keep original USD amount
+                        'amount_omr' => $amountInOMR, // Store OMR amount
                         'customer_email' => $request->customer_email ?? $order->billing_address['email'] ?? '',
                         'customer_name' => $request->customer_name ?? '',
                     ]);
+                }
+            } else {
+                // Convert amount from USD to OMR if amount is in session
+                if (session()->has('amount')) {
+                    $currencyService = app(CurrencyService::class);
+                    $amountInOMR = $currencyService->convert((float) session('amount'), CurrencyService::PAYMENT_CURRENCY);
+                    $amount = (string) $amountInOMR;
                 }
             }
 

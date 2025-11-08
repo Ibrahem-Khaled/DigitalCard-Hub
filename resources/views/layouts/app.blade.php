@@ -29,6 +29,9 @@
         href="https://fonts.googleapis.com/css2?family={{ $fontFamily }}:wght@200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -54,6 +57,9 @@
     <!-- AI Chatbot -->
     @include('components.ai-chatbot')
 
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
     <!-- Scripts -->
     @stack('scripts')
 

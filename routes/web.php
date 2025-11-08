@@ -10,6 +10,9 @@ use App\Http\Controllers\Dashboard\SettingsController;
 // Home Page
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Currency Change Route
+Route::post('/currency/change', [App\Http\Controllers\CurrencyController::class, 'change'])->name('currency.change');
+
 // Contact Routes
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');

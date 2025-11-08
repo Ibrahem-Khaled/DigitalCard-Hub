@@ -190,7 +190,21 @@ class DigitalCardController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $digitalCard->update($request->all());
+        // إخفاء الأكواد من التحديث إذا كانت فارغة (لأسباب أمنية)
+        $data = $request->all();
+        
+        // إذا كانت الحقول فارغة، لا يتم تحديثها (تبقى القيمة الحالية)
+        if (empty($data['card_code'])) {
+            unset($data['card_code']);
+        }
+        if (empty($data['card_pin'])) {
+            unset($data['card_pin']);
+        }
+        if (empty($data['card_number'])) {
+            unset($data['card_number']);
+        }
+
+        $digitalCard->update($data);
 
         return redirect()->route('dashboard.digital-cards.index')
             ->with('success', 'تم تحديث البطاقة الرقمية بنجاح');

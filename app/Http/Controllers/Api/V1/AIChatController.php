@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\BaseController;
+use App\Http\Resources\Api\ProductResource;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Setting;
@@ -12,8 +13,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
-class AIChatController extends Controller
+class AIChatController extends BaseController
 {
     private $openaiApiKey;
     private $openaiBaseUrl = 'https://api.openai.com/v1/chat/completions';
@@ -25,13 +27,17 @@ class AIChatController extends Controller
 
     public function chat(Request $request)
     {
-        try {
-            $request->validate([
-                'message' => 'required|string|max:1000',
-                'session_id' => 'nullable|string',
-                'context' => 'nullable|array'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|string|max:1000',
+            'session_id' => 'nullable|string',
+            'context' => 'nullable|array'
+        ]);
 
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors()->toArray());
+        }
+
+        try {
             $userMessage = $request->input('message');
             $sessionId = $request->input('session_id', 'default');
             $context = $request->input('context', []);
@@ -66,18 +72,36 @@ class AIChatController extends Controller
             // Save conversation
             $this->saveConversation($sessionId, $userMessage, $processedResponse['message']);
 
-            return response()->json($processedResponse);
+            return $this->successResponse($processedResponse);
 
         } catch (\Exception $e) {
             Log::error('AI Chat Error: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'عذراً، حدث خطأ في النظام. يرجى المحاولة مرة أخرى.',
-                'action' => null,
-                'products' => []
-            ], 500);
+            return $this->errorResponse('عذراً، حدث خطأ في النظام. يرجى المحاولة مرة أخرى.', 500);
         }
     }
 
+    public function getProductSuggestions(Request $request)
+    {
+        $query = $request->input('q', '');
+
+        if (strlen($query) < 2) {
+            return $this->successResponse([]);
+        }
+
+        $products = Product::active()
+            ->where(function($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('description', 'like', "%{$query}%")
+                  ->orWhere('brand', 'like', "%{$query}%")
+                  ->orWhere('card_provider', 'like', "%{$query}%");
+            })
+            ->limit(5)
+            ->get(['id', 'name', 'slug', 'current_price', 'image']);
+
+        return $this->successResponse(ProductResource::collection($products));
+    }
+
+    // Private methods (same as original)
     private function analyzeIntent($message)
     {
         $message = strtolower($message);
@@ -107,7 +131,6 @@ class AIChatController extends Controller
             return collect([]);
         }
 
-        // Extract keywords from message
         $keywords = $this->extractKeywords($message);
 
         if (empty($keywords)) {
@@ -116,7 +139,6 @@ class AIChatController extends Controller
 
         $query = Product::active();
 
-        // Search by name, description, or tags
         foreach ($keywords as $keyword) {
             $query->where(function($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
@@ -131,7 +153,6 @@ class AIChatController extends Controller
 
         $products = $query->limit(8)->get();
 
-        // If no products found, return featured products
         if ($products->isEmpty()) {
             $products = Product::active()->featured()->limit(5)->get();
         }
@@ -142,11 +163,7 @@ class AIChatController extends Controller
     private function extractKeywords($message)
     {
         $message = strtolower($message);
-
-        // Common Arabic stop words
         $stopWords = ['في', 'من', 'إلى', 'على', 'هذا', 'هذه', 'التي', 'الذي', 'التي', 'أريد', 'أحتاج', 'أبحث', 'عن', 'من', 'بطاقة', 'بطاقات'];
-
-        // Extract words
         $words = preg_split('/\s+/', $message);
         $keywords = [];
 
@@ -160,38 +177,26 @@ class AIChatController extends Controller
         return array_unique($keywords);
     }
 
-    /**
-     * Get site information (settings, categories, etc.)
-     */
     private function getSiteInformation()
     {
         $cacheKey = 'ai_site_information';
         
         return Cache::remember($cacheKey, now()->addHours(24), function () {
             $info = [];
-            
-            // Get site settings
             $info['site_name'] = Setting::get('site_name', 'متجر البطاقات الرقمية');
             $info['site_description'] = Setting::get('site_description', '');
-            
-            // Get categories
             $info['categories'] = Category::active()
                 ->orderBy('sort_order')
                 ->get(['id', 'name', 'slug', 'description']);
-            
             return $info;
         });
     }
 
-    /**
-     * Get relevant knowledge base items
-     */
     private function getRelevantKnowledgeBase($message)
     {
         $keywords = $this->extractKeywords($message);
         
         if (empty($keywords)) {
-            // Return general knowledge base items
             return AIKnowledgeBase::active()
                 ->orderBy('priority', 'desc')
                 ->limit(5)
@@ -210,7 +215,6 @@ class AIChatController extends Controller
 
         $results = $query->orderBy('priority', 'desc')->limit(5)->get();
         
-        // If no results, return general items
         if ($results->isEmpty()) {
             return AIKnowledgeBase::active()
                 ->orderBy('priority', 'desc')
@@ -224,7 +228,7 @@ class AIChatController extends Controller
     private function buildSystemPrompt($products, $siteInfo, $knowledgeBase, $context)
     {
         $currencyService = app(CurrencyService::class);
-        $userCurrency = session('currency', 'OMR');
+        $userCurrency = 'OMR'; // Default for API
         $currencySymbol = $currencyService->getCurrencySymbol($userCurrency);
         
         $productInfo = '';
@@ -240,7 +244,6 @@ class AIChatController extends Controller
                     $formattedSalePrice = number_format($salePrice, 2) . ' ' . $currencySymbol;
                     $productInfo .= "  (خصم: {$formattedSalePrice} بدلاً من {$formattedPrice})\n";
                 }
-                $productInfo .= "  رابط المنتج: " . route('products.show', $product->slug) . "\n\n";
             }
         }
 
@@ -276,12 +279,11 @@ class AIChatController extends Controller
 2. إذا سألك المستخدم عن أي شيء خارج نطاق المتجر (أخبار، طقس، معلومات عامة، مواقع أخرى، إلخ)، يجب أن تقول: 'عذراً، أنا مساعد خاص بهذا المتجر فقط. يمكنني مساعدتك في البحث عن المنتجات، معلومات الطلبات، أو أي استفسار متعلق بالمتجر.'
 3. تحدث باللغة العربية دائماً
 4. كن مفيداً ومهذباً ومهنياً
-5. قدم روابط مباشرة للمنتجات عند الحاجة باستخدام تنسيق: [اسم المنتج](رابط المنتج)
-6. استخدم الأسعار بالعملة المختارة: {$currencySymbol}
-7. إذا لم تجد منتجاً محدداً، اقترح منتجات مشابهة من المتجر
-8. شجع العملاء على الشراء بطريقة مهذبة واحترافية
-9. لا تخترع معلومات غير موجودة في المتجر
-10. إذا لم تعرف الإجابة، اعترف بذلك ووجه المستخدم لخدمة العملاء
+5. استخدم الأسعار بالعملة المختارة: {$currencySymbol}
+6. إذا لم تجد منتجاً محدداً، اقترح منتجات مشابهة من المتجر
+7. شجع العملاء على الشراء بطريقة مهذبة واحترافية
+8. لا تخترع معلومات غير موجودة في المتجر
+9. إذا لم تعرف الإجابة، اعترف بذلك ووجه المستخدم لخدمة العملاء
 
 {$categoriesInfo}
 
@@ -298,7 +300,6 @@ class AIChatController extends Controller
             ['role' => 'system', 'content' => $systemPrompt]
         ];
 
-        // Add recent conversation history (last 6 messages)
         $recentHistory = array_slice($conversationHistory, -6);
         foreach ($recentHistory as $message) {
             $messages[] = [
@@ -307,7 +308,6 @@ class AIChatController extends Controller
             ];
         }
 
-        // Add current user message
         $messages[] = [
             'role' => 'user',
             'content' => $userMessage
@@ -350,7 +350,6 @@ class AIChatController extends Controller
             'action' => null,
         ];
 
-        // Extract action from AI response
         if (strpos($aiResponse, 'add_to_cart') !== false) {
             $response['action'] = 'add_to_cart';
         } elseif (strpos($aiResponse, 'redirect') !== false) {
@@ -383,30 +382,9 @@ class AIChatController extends Controller
             'timestamp' => now()
         ];
 
-        // Keep only last 20 messages
         $history = array_slice($history, -20);
 
         Cache::put($cacheKey, $history, now()->addHours(24));
     }
-
-    public function getProductSuggestions(Request $request)
-    {
-        $query = $request->input('q', '');
-
-        if (strlen($query) < 2) {
-            return response()->json([]);
-        }
-
-        $products = Product::active()
-            ->where(function($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%")
-                  ->orWhere('brand', 'like', "%{$query}%")
-                  ->orWhere('card_provider', 'like', "%{$query}%");
-            })
-            ->limit(5)
-            ->get(['id', 'name', 'slug', 'current_price', 'image']);
-
-        return response()->json($products);
-    }
 }
+

@@ -142,63 +142,40 @@
             <p class="text-gray-400 text-lg">اختر الفئة المناسبة لك واستكشف مجموعتنا الواسعة</p>
         </div>
 
-        <!-- Categories Carousel -->
-        <div class="relative">
-            <!-- Navigation Buttons -->
-            <button id="categories-prev" class="absolute right-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-14 h-14 bg-gradient-to-r from-purple-500 to-orange-500 rounded-full flex items-center justify-center text-white shadow-2xl shadow-purple-500/50 hover:scale-110 transition-all duration-300 group">
-                <svg class="w-6 h-6 group-hover:scale-125 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </button>
-
-            <button id="categories-next" class="absolute left-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 w-14 h-14 bg-gradient-to-r from-purple-500 to-orange-500 rounded-full flex items-center justify-center text-white shadow-2xl shadow-purple-500/50 hover:scale-110 transition-all duration-300 group">
-                <svg class="w-6 h-6 group-hover:scale-125 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </button>
-
-            <!-- Carousel Container -->
-            <div class="overflow-hidden px-12">
-                <div id="categories-carousel" class="flex gap-8 transition-transform duration-500 ease-in-out">
+        <!-- Categories Swiper -->
+        <div class="relative px-4 sm:px-6 md:px-12">
+            <div class="swiper categories-swiper">
+                <div class="swiper-wrapper">
                     @foreach($categories as $category)
-                    <div class="flex-shrink-0" style="width: calc(25% - 24px);">
+                    <div class="swiper-slide">
                         <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group block text-center">
                             <!-- صورة دائرية -->
-                            <div class="relative mx-auto mb-4 w-40 h-40">
+                            <div class="relative mx-auto mb-3 sm:mb-4 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40">
                                 <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-orange-500 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-                                <div class="relative w-full h-full rounded-full overflow-hidden border-4 border-purple-500/20 group-hover:border-purple-500 transition-all duration-300 bg-[#1A1A1A]">
+                                <div class="relative w-full h-full rounded-full overflow-hidden border-2 sm:border-4 border-purple-500/20 group-hover:border-purple-500 transition-all duration-300 bg-[#1A1A1A]">
                                     @if($category->image)
                                         <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                                     @else
                                         <div class="w-full h-full bg-gradient-to-br from-purple-500/20 to-orange-500/20 flex items-center justify-center">
-                                            <span class="text-5xl font-black text-white/30">{{ mb_substr($category->name, 0, 1) }}</span>
+                                            <span class="text-2xl sm:text-3xl md:text-5xl font-black text-white/30">{{ mb_substr($category->name, 0, 1) }}</span>
                                         </div>
                                     @endif
                                 </div>
-                                <!-- Badge -->
-                                <div class="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-orange-500 w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                                    🔥
-                                </div>
                             </div>
                             <!-- اسم الفئة -->
-                            <h3 class="text-lg font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">{{ $category->name }}</h3>
-                            <p class="text-sm text-gray-400">{{ $category->products->count() }} منتج</p>
+                            <h3 class="text-sm sm:text-base md:text-lg font-bold text-white mb-1 group-hover:text-purple-400 transition-colors line-clamp-2">{{ $category->name }}</h3>
+                            <p class="text-xs sm:text-sm text-gray-400">{{ $category->products->count() }} منتج</p>
                         </a>
                     </div>
                     @endforeach
                 </div>
-            </div>
 
-            <!-- Indicators -->
-            <div class="flex justify-center gap-2 mt-8">
-                @php
-                    $totalCategories = $categories->count();
-                    $itemsPerView = 4; // Desktop
-                    $totalPages = ceil($totalCategories / $itemsPerView);
-                @endphp
-                @for($i = 0; $i < $totalPages; $i++)
-                    <button class="categories-indicator w-3 h-3 rounded-full transition-all duration-300 {{ $i === 0 ? 'bg-gradient-to-r from-purple-500 to-orange-500 w-8' : 'bg-white/20 hover:bg-white/40' }}" data-index="{{ $i }}"></button>
-                @endfor
+                <!-- Navigation buttons -->
+                <div class="swiper-button-next categories-next"></div>
+                <div class="swiper-button-prev categories-prev"></div>
+
+                <!-- Pagination -->
+                <div class="swiper-pagination categories-pagination mt-6 sm:mt-8"></div>
             </div>
         </div>
     </div>
@@ -207,140 +184,108 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const carousel = document.getElementById('categories-carousel');
-    const prevBtn = document.getElementById('categories-prev');
-    const nextBtn = document.getElementById('categories-next');
-    const indicators = document.querySelectorAll('.categories-indicator');
-
-    let currentIndex = 0;
-    const totalItems = {{ $categories->count() }};
-
-    // Get items per view based on screen size
-    function getItemsPerView() {
-        if (window.innerWidth >= 1024) return 4; // lg
-        if (window.innerWidth >= 768) return 3;  // md
-        return 2; // mobile
-    }
-
-    let itemsPerView = getItemsPerView();
-    const totalPages = Math.ceil(totalItems / itemsPerView);
-
-    function updateCarousel() {
-        const itemWidth = carousel.querySelector('div').offsetWidth;
-        const gap = 24; // 6 * 4px (gap-6)
-        const offset = currentIndex * itemsPerView * (itemWidth + gap);
-
-        carousel.style.transform = `translateX(${offset}px)`;
-
-        // Update indicators
-        indicators.forEach((indicator, index) => {
-            if (index === currentIndex) {
-                indicator.classList.remove('bg-white/20', 'w-3');
-                indicator.classList.add('bg-gradient-to-r', 'from-purple-500', 'to-orange-500', 'w-8');
-            } else {
-                indicator.classList.remove('bg-gradient-to-r', 'from-purple-500', 'to-orange-500', 'w-8');
-                indicator.classList.add('bg-white/20', 'w-3');
-            }
-        });
-
-        // Disable buttons at ends
-        prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
-        prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
-
-        nextBtn.style.opacity = currentIndex >= totalPages - 1 ? '0.5' : '1';
-        nextBtn.style.pointerEvents = currentIndex >= totalPages - 1 ? 'none' : 'auto';
-    }
-
-    prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateCarousel();
-        }
+    // Initialize Swiper for Categories
+    const categoriesSwiper = new Swiper('.categories-swiper', {
+        slidesPerView: 2,
+        spaceBetween: 16,
+        loop: false,
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+        },
+        navigation: {
+            nextEl: '.categories-next',
+            prevEl: '.categories-prev',
+        },
+        pagination: {
+            el: '.categories-pagination',
+            clickable: true,
+            dynamicBullets: true,
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 2,
+                spaceBetween: 16,
+            },
+            768: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+            },
+            1024: {
+                slidesPerView: 4,
+                spaceBetween: 32,
+            },
+            1280: {
+                slidesPerView: 4,
+                spaceBetween: 32,
+            },
+        },
     });
-
-    nextBtn.addEventListener('click', () => {
-        if (currentIndex < totalPages - 1) {
-            currentIndex++;
-            updateCarousel();
-        }
-    });
-
-    // Indicator click
-    indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', () => {
-            currentIndex = index;
-            updateCarousel();
-        });
-    });
-
-    // Touch/Swipe support
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    carousel.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-
-    carousel.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
-
-    function handleSwipe() {
-        if (touchEndX < touchStartX - 50 && currentIndex < totalPages - 1) {
-            // Swipe left (next)
-            currentIndex++;
-            updateCarousel();
-        }
-        if (touchEndX > touchStartX + 50 && currentIndex > 0) {
-            // Swipe right (prev)
-            currentIndex--;
-            updateCarousel();
-        }
-    }
-
-    // Auto-play (optional)
-    let autoPlayInterval;
-    function startAutoPlay() {
-        autoPlayInterval = setInterval(() => {
-            if (currentIndex < totalPages - 1) {
-                currentIndex++;
-            } else {
-                currentIndex = 0;
-            }
-            updateCarousel();
-        }, 5000); // 5 seconds
-    }
-
-    function stopAutoPlay() {
-        clearInterval(autoPlayInterval);
-    }
-
-    // Start auto-play
-    startAutoPlay();
-
-    // Stop auto-play on hover
-    carousel.addEventListener('mouseenter', stopAutoPlay);
-    carousel.addEventListener('mouseleave', startAutoPlay);
-
-    // Update on window resize
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            itemsPerView = getItemsPerView();
-            updateCarousel();
-        }, 250);
-    });
-
-    // Initialize
-    updateCarousel();
 });
 </script>
 @endpush
 
 @push('styles')
 <style>
+/* Swiper Categories Styles */
+.categories-swiper {
+    padding-bottom: 3rem;
+}
+
+.categories-swiper .swiper-button-next,
+.categories-swiper .swiper-button-prev {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(to right, #a855f7, #f97316);
+    border-radius: 50%;
+    color: white;
+    box-shadow: 0 10px 25px rgba(168, 85, 247, 0.5);
+    transition: all 0.3s ease;
+}
+
+.categories-swiper .swiper-button-next:hover,
+.categories-swiper .swiper-button-prev:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 35px rgba(168, 85, 247, 0.7);
+}
+
+.categories-swiper .swiper-button-next::after,
+.categories-swiper .swiper-button-prev::after {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.categories-swiper .swiper-button-next {
+    left: 0;
+    right: auto;
+}
+
+.categories-swiper .swiper-button-prev {
+    right: 0;
+    left: auto;
+}
+
+.categories-swiper .swiper-pagination-bullet {
+    width: 0.75rem;
+    height: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.categories-swiper .swiper-pagination-bullet-active {
+    width: 2rem;
+    background: linear-gradient(to right, #a855f7, #f97316);
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+    .categories-swiper .swiper-button-next,
+    .categories-swiper .swiper-button-prev {
+        display: none;
+    }
+}
+
 /* Slider Styles */
 .slider-container {
     position: relative;

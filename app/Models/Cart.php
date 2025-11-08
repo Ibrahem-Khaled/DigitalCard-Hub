@@ -111,6 +111,54 @@ class Cart extends Model
             'is_abandoned' => true,
             'abandoned_at' => now(),
         ]);
+
+        // إرسال إيميل تلقائي إذا كان للمستخدم إيميل
+        if ($this->user_id && $this->user && $this->user->email) {
+            try {
+                $this->sendAbandonedCartEmail();
+            } catch (\Exception $e) {
+                \Log::error("Failed to send abandoned cart email automatically", [
+                    'cart_id' => $this->id,
+                    'user_id' => $this->user_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Send abandoned cart email automatically.
+     */
+    private function sendAbandonedCartEmail(): void
+    {
+        // تحميل العلاقات المطلوبة
+        if (!$this->relationLoaded('user')) {
+            $this->load('user');
+        }
+        
+        if (!$this->relationLoaded('items')) {
+            $this->load('items.product');
+        }
+
+        if (!$this->user || !$this->user->email) {
+            return;
+        }
+
+        $subject = 'تذكير: لديك منتجات في سلة التسوق';
+        $message = 'لاحظنا أنك تركت بعض المنتجات في سلة التسوق الخاصة بك. نحن هنا لمساعدتك في إكمال طلبك!';
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($this->user->email)
+                ->send(new \App\Mail\AbandonedCartMail($this->user, $this, $subject, $message));
+        } catch (\Exception $e) {
+            \Log::error("Failed to send abandoned cart email in model", [
+                'cart_id' => $this->id,
+                'user_id' => $this->user_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     /**

@@ -1,16 +1,16 @@
 @extends('layouts.dashboard-new')
 
-@section('title', 'تعديل البطاقة الرقمية - ' . $digitalCard->card_code . ' - متجر البطاقات الرقمية')
+@section('title', 'تعديل البطاقة الرقمية - متجر البطاقات الرقمية')
 
 @section('page-title', 'تعديل البطاقة الرقمية')
-@section('page-subtitle', 'تعديل بيانات البطاقة الرقمية: ' . $digitalCard->card_code)
+@section('page-subtitle', 'تعديل بيانات البطاقة الرقمية #' . $digitalCard->id)
 
 @section('content')
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h3 class="page-title">تعديل البطاقة الرقمية</h3>
-            <p class="page-subtitle">تعديل بيانات البطاقة الرقمية: {{ $digitalCard->card_code }}</p>
+            <p class="page-subtitle">تعديل بيانات البطاقة الرقمية #{{ $digitalCard->id }}</p>
         </div>
         <div class="page-actions">
             <a href="{{ route('dashboard.digital-cards.index') }}" class="btn btn-outline-secondary">
@@ -73,7 +73,12 @@
                         <div class="col-md-6 mb-3">
                             <label for="card_code" class="form-label">رمز البطاقة</label>
                             <input type="text" class="form-control @error('card_code') is-invalid @enderror"
-                                   id="card_code" name="card_code" value="{{ old('card_code', $digitalCard->card_code) }}">
+                                   id="card_code" name="card_code" value="{{ old('card_code', '') }}" 
+                                   placeholder="أدخل كود جديد (الكود الحالي مخفي لأسباب أمنية)">
+                            <small class="text-muted">
+                                <i class="bi bi-lock me-1"></i>
+                                الكود الحالي مخفي لأسباب أمنية - سيتم إرساله للعميل فقط
+                            </small>
                             @error('card_code')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -83,7 +88,12 @@
                         <div class="col-md-6 mb-3">
                             <label for="card_pin" class="form-label">PIN</label>
                             <input type="text" class="form-control @error('card_pin') is-invalid @enderror"
-                                   id="card_pin" name="card_pin" value="{{ old('card_pin', $digitalCard->card_pin) }}">
+                                   id="card_pin" name="card_pin" value="{{ old('card_pin', '') }}"
+                                   placeholder="أدخل PIN جديد (PIN الحالي مخفي لأسباب أمنية)">
+                            <small class="text-muted">
+                                <i class="bi bi-lock me-1"></i>
+                                PIN الحالي مخفي لأسباب أمنية - سيتم إرساله للعميل فقط
+                            </small>
                             @error('card_pin')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -93,7 +103,12 @@
                         <div class="col-md-6 mb-3">
                             <label for="card_number" class="form-label">رقم البطاقة</label>
                             <input type="text" class="form-control @error('card_number') is-invalid @enderror"
-                                   id="card_number" name="card_number" value="{{ old('card_number', $digitalCard->card_number) }}">
+                                   id="card_number" name="card_number" value="{{ old('card_number', '') }}"
+                                   placeholder="أدخل رقم بطاقة جديد (الرقم الحالي مخفي لأسباب أمنية)">
+                            <small class="text-muted">
+                                <i class="bi bi-lock me-1"></i>
+                                رقم البطاقة الحالي مخفي لأسباب أمنية - سيتم إرساله للعميل فقط
+                            </small>
                             @error('card_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -178,7 +193,10 @@
             <div class="card-body">
                 <div class="info-item">
                     <label>رمز البطاقة:</label>
-                    <span class="font-monospace">{{ $digitalCard->card_code }}</span>
+                    <span class="text-muted">
+                        <i class="bi bi-lock me-1"></i>
+                        مخفي لأسباب أمنية
+                    </span>
                 </div>
                 <div class="info-item">
                     <label>الرقم التسلسلي:</label>

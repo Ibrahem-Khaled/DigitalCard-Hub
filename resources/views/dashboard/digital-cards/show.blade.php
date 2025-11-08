@@ -1,16 +1,16 @@
 @extends('layouts.dashboard-new')
 
-@section('title', 'عرض البطاقة الرقمية - ' . $digitalCard->card_code . ' - متجر البطاقات الرقمية')
+@section('title', 'عرض البطاقة الرقمية - متجر البطاقات الرقمية')
 
 @section('page-title', 'عرض البطاقة الرقمية')
-@section('page-subtitle', 'تفاصيل البطاقة الرقمية: ' . $digitalCard->card_code)
+@section('page-subtitle', 'تفاصيل البطاقة الرقمية #' . $digitalCard->id)
 
 @section('content')
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h3 class="page-title">عرض البطاقة الرقمية</h3>
-            <p class="page-subtitle">تفاصيل البطاقة الرقمية: {{ $digitalCard->card_code }}</p>
+            <p class="page-subtitle">تفاصيل البطاقة الرقمية #{{ $digitalCard->id }}</p>
         </div>
         <div class="page-actions">
             <a href="{{ route('dashboard.digital-cards.index') }}" class="btn btn-outline-secondary">
@@ -36,8 +36,18 @@
                 </div>
 
                 <!-- رمز البطاقة -->
-                <h4 class="mb-1 font-monospace">{{ $digitalCard->card_code }}</h4>
-                <p class="text-muted mb-3">{{ $digitalCard->serial_number }}</p>
+                <div class="mb-3">
+                    <h4 class="mb-1 text-muted">
+                        <i class="bi bi-lock me-2"></i>
+                        مخفي لأسباب أمنية
+                    </h4>
+                    <p class="text-muted mb-0">
+                        <small>سيتم إرسال الأكواد للعميل فقط بعد الشراء</small>
+                    </p>
+                    <p class="text-muted mb-0">
+                        <small>ID: #{{ $digitalCard->id }}</small>
+                    </p>
+                </div>
 
                 <!-- الحالة -->
                 <div class="mb-3">
@@ -91,12 +101,18 @@
             <div class="card-body">
                 <div class="info-item">
                     <label>PIN:</label>
-                    <span class="font-monospace">{{ $digitalCard->card_pin }}</span>
+                    <span class="text-muted">
+                        <i class="bi bi-lock me-1"></i>
+                        مخفي لأسباب أمنية
+                    </span>
                 </div>
 
                 <div class="info-item">
                     <label>رقم البطاقة:</label>
-                    <span class="font-monospace">{{ $digitalCard->card_number }}</span>
+                    <span class="text-muted">
+                        <i class="bi bi-lock me-1"></i>
+                        مخفي لأسباب أمنية
+                    </span>
                 </div>
 
                 <div class="info-item">

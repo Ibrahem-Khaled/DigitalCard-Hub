@@ -140,14 +140,14 @@
                     @if($product->isOnSale())
                         <div class="flex items-baseline gap-4 mb-2">
                             <span class="text-5xl font-black bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
-                                {{ number_format($product->sale_price, 0) }} $
+                                {{ formatPrice($product->sale_price) }}
                             </span>
-                            <span class="text-2xl text-gray-500 line-through">{{ number_format($product->price, 0) }} $</span>
+                            <span class="text-2xl text-gray-500 line-through">{{ formatPrice($product->price) }}</span>
                         </div>
-                        <span class="text-green-400 font-semibold">وفّر {{ number_format($product->price - $product->sale_price, 0) }} $</span>
+                        <span class="text-green-400 font-semibold">وفّر {{ formatPrice($product->price - $product->sale_price) }}</span>
                     @else
                         <span class="text-5xl font-black bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
-                            {{ number_format($product->price, 0) }} $
+                            {{ formatPrice($product->price) }}
                         </span>
                     @endif
                 </div>

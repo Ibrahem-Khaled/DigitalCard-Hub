@@ -129,8 +129,15 @@ class CartController extends Controller
     {
         $cart->markAsAbandoned();
 
+        $message = 'تم وضع علامة على السلة كمتروكة بنجاح';
+        
+        // إضافة رسالة إذا تم إرسال إيميل
+        if ($cart->user && $cart->user->email) {
+            $message .= ' وتم إرسال إيميل تذكيري للعميل';
+        }
+
         return redirect()->back()
-            ->with('success', 'تم وضع علامة على السلة كمتروكة');
+            ->with('success', $message);
     }
 
     /**
@@ -291,11 +298,19 @@ class CartController extends Controller
             'message.required' => 'نص الإشعار مطلوب',
         ]);
 
+        // تحميل العلاقات المطلوبة
+        $cart->load(['user', 'items.product']);
+
         if (!$cart->user_id) {
             return response()->json(['error' => 'لا يمكن إرسال إشعار لسلة بدون مستخدم'], 400);
         }
 
         $user = $cart->user;
+        
+        // التحقق من وجود إيميل للمستخدم
+        if (!$user || !$user->email) {
+            return response()->json(['error' => 'لا يوجد إيميل للمستخدم'], 400);
+        }
         $channels = $request->channels;
         $template = $request->template;
         $subject = $request->subject ?: 'تذكير: لديك منتجات في سلة التسوق';
@@ -410,6 +425,11 @@ class CartController extends Controller
      */
     private function sendNotificationToChannel($user, $cart, $channel, $template, $subject, $message, $priority)
     {
+        // التأكد من تحميل العلاقات
+        if (!$cart->relationLoaded('items')) {
+            $cart->load('items.product');
+        }
+
         // Create notification record
         $notification = Notification::create([
             'user_id' => $user->id,
@@ -422,13 +442,13 @@ class CartController extends Controller
                 'channel' => $channel,
                 'cart_items' => $cart->items->map(function ($item) {
                     return [
-                        'product_name' => $item->product->name,
+                        'product_name' => $item->product ? $item->product->name : 'منتج محذوف',
                         'quantity' => $item->quantity,
                         'price' => $item->price,
                     ];
                 }),
                 'cart_total' => $cart->total_amount,
-                'cart_currency' => $cart->currency,
+                'cart_currency' => $cart->currency ?? 'USD',
             ],
             'channel' => $channel,
             'priority' => $priority,
@@ -457,20 +477,29 @@ class CartController extends Controller
      */
     private function processMessageTemplate($message, $user, $cart, $template)
     {
+        // التأكد من تحميل العلاقات
+        if (!$cart->relationLoaded('items')) {
+            $cart->load('items.product');
+        }
+
         $replacements = [
-            '{{user_name}}' => $user->full_name,
-            '{{cart_total}}' => number_format($cart->total_amount, 2),
-            '{{cart_currency}}' => $cart->currency,
-            '{{cart_items_count}}' => $cart->items_count,
-            '{{cart_url}}' => route('cart.show'),
+            '{{user_name}}' => $user->full_name ?? $user->email,
+            '{{cart_total}}' => number_format($cart->total_amount ?? 0, 2),
+            '{{cart_currency}}' => $cart->currency ?? 'USD',
+            '{{cart_items_count}}' => $cart->items_count ?? 0,
+            '{{cart_url}}' => route('cart.index'),
             '{{checkout_url}}' => route('checkout.index'),
-            '{{site_name}}' => config('app.name'),
+            '{{site_name}}' => config('app.name', 'متجر البطاقات الرقمية'),
         ];
 
         // Add cart items to replacements
         $itemsList = '';
-        foreach ($cart->items as $item) {
-            $itemsList .= "• {$item->product->name} (الكمية: {$item->quantity}) - " . number_format($item->price, 2) . " {$cart->currency}\n";
+        if ($cart->items && $cart->items->count() > 0) {
+            foreach ($cart->items as $item) {
+                $productName = $item->product ? $item->product->name : 'منتج محذوف';
+                $currency = $cart->currency ?? 'USD';
+                $itemsList .= "• {$productName} (الكمية: {$item->quantity}) - " . number_format($item->price, 2) . " {$currency}\n";
+            }
         }
         $replacements['{{cart_items_list}}'] = $itemsList;
 
@@ -482,12 +511,31 @@ class CartController extends Controller
      */
     private function sendEmailNotification($user, $cart, $subject, $message)
     {
-        // Here you would implement actual email sending
-        // For now, we'll just log it
-        Log::info("Email notification sent to {$user->email}: {$subject}");
+        // التحقق من وجود إيميل للمستخدم
+        if (!$user->email) {
+            throw new \Exception('لا يوجد إيميل للمستخدم');
+        }
 
-        // In a real implementation, you would use:
-        // Mail::to($user->email)->send(new AbandonedCartMail($cart, $subject, $message));
+        try {
+            // إرسال الإيميل
+            Mail::to($user->email)->send(new \App\Mail\AbandonedCartMail($user, $cart, $subject, $message));
+            
+            Log::info("Abandoned cart email sent successfully", [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'cart_id' => $cart->id,
+                'subject' => $subject,
+                'sent_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Failed to send abandoned cart email", [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'cart_id' => $cart->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**

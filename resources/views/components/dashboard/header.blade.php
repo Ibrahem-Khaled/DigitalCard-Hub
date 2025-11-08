@@ -94,11 +94,11 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end user-menu">
                         <div class="user-menu-body">
-                            <a class="user-menu-item" href="#">
+                            <a class="user-menu-item" href="{{ route('profile.index') }}">
                                 <i class="bi bi-person"></i>
                                 <span>الملف الشخصي</span>
                             </a>
-                            <a class="user-menu-item" href="#">
+                            <a class="user-menu-item" href="{{ route('dashboard.settings.index') }}">
                                 <i class="bi bi-gear"></i>
                                 <span>الإعدادات</span>
                             </a>

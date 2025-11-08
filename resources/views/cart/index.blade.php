@@ -71,9 +71,9 @@
                                 <!-- Price -->
                                 <div class="text-right">
                                     <p class="text-2xl font-bold text-white">
-                                        {{ number_format($item->total_price, 2) }} <span class="text-sm text-gray-400">$</span>
+                                        {{ formatPrice($item->total_price) }}
                                     </p>
-                                    <p class="text-sm text-gray-400">{{ number_format($item->price, 2) }} × {{ $item->quantity }}</p>
+                                    <p class="text-sm text-gray-400">{{ formatPrice($item->price) }} × {{ $item->quantity }}</p>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                                         <span class="text-green-400 font-semibold">كود الخصم مطبق</span>
                                     </div>
                                     <p class="text-white font-bold">{{ $cart->coupon_code }}</p>
-                                    <p class="text-sm text-gray-400">خصم: {{ number_format($cart->discount_amount, 2) }} $</p>
+                                    <p class="text-sm text-gray-400">خصم: {{ formatPrice($cart->discount_amount) }}</p>
                                 </div>
                                 <button onclick="removeCoupon()" class="text-red-400 hover:text-red-300 transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,16 +128,16 @@
                     <div class="space-y-4 mb-6">
                         <div class="flex justify-between text-gray-300">
                             <span>المجموع الفرعي</span>
-                            <span class="font-semibold">{{ number_format($subtotal, 2) }} $</span>
+                            <span class="font-semibold">{{ formatPrice($subtotal) }}</span>
                         </div>
                         <div class="flex justify-between text-gray-300">
                             <span>الضريبة (14%)</span>
-                            <span class="font-semibold">{{ number_format($tax, 2) }} $</span>
+                            <span class="font-semibold">{{ formatPrice($tax) }}</span>
                         </div>
                         @if($discount > 0)
                         <div class="flex justify-between text-green-400">
                             <span>الخصم</span>
-                            <span class="font-semibold">- {{ number_format($discount, 2) }} $</span>
+                            <span class="font-semibold">- {{ formatPrice($discount) }}</span>
                         </div>
                         @endif
                         <div class="flex justify-between text-gray-300">
@@ -150,7 +150,7 @@
                         <div class="flex justify-between items-center">
                             <span class="text-xl font-bold text-white">الإجمالي</span>
                             <span class="text-3xl font-black bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
-                                {{ number_format($total, 2) }} $
+                                {{ formatPrice($total) }}
                             </span>
                         </div>
                     </div>

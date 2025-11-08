@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Services\CurrencyService;
+use App\Services\GeoLocationService;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -50,6 +52,26 @@ class AppServiceProvider extends ServiceProvider
             }
         } catch (\Throwable $e) {
             report($e);
+        }
+
+        // Share currency information with all views
+        try {
+            $currencyService = app(CurrencyService::class);
+            // Get currency from session or detect from IP
+            $userCurrency = session('currency');
+            
+            if (!$userCurrency) {
+                $geoService = app(GeoLocationService::class);
+                $userCurrency = $geoService->getCurrencyFromIP(request()->ip());
+                session(['currency' => $userCurrency]);
+            }
+            
+            View::share('userCurrency', $userCurrency);
+            View::share('currencySymbol', $currencyService->getCurrencySymbol($userCurrency));
+        } catch (\Throwable $e) {
+            report($e);
+            View::share('userCurrency', 'OMR');
+            View::share('currencySymbol', 'ر.ع.');
         }
     }
 }

@@ -107,11 +107,11 @@
             <div>
                 @if($product->isOnSale())
                     <div class="flex items-center gap-2">
-                        <span class="text-2xl font-black text-white">${{ number_format($product->sale_price, 2) }}</span>
-                        <span class="text-sm text-gray-500 line-through">${{ number_format($product->price, 2) }}</span>
+                        <span class="text-2xl font-black text-white">{{ formatPrice($product->sale_price) }}</span>
+                        <span class="text-sm text-gray-500 line-through">{{ formatPrice($product->price) }}</span>
                     </div>
                 @else
-                    <span class="text-2xl font-black text-white">${{ number_format($product->price, 2) }}</span>
+                    <span class="text-2xl font-black text-white">{{ formatPrice($product->price) }}</span>
                 @endif
             </div>
 

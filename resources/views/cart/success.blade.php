@@ -97,16 +97,16 @@
                 <div class="space-y-3 max-w-sm mr-auto">
                     <div class="flex justify-between text-gray-300">
                         <span>المجموع الفرعي</span>
-                        <span class="font-semibold">{{ number_format($order->subtotal, 2) }} $</span>
+                        <span class="font-semibold">{{ formatPrice($order->subtotal) }}</span>
                     </div>
                     <div class="flex justify-between text-gray-300">
                         <span>الضريبة</span>
-                        <span class="font-semibold">{{ number_format($order->tax_amount, 2) }} $</span>
+                        <span class="font-semibold">{{ formatPrice($order->tax_amount) }}</span>
                     </div>
                     @if($order->discount_amount > 0)
                     <div class="flex justify-between text-green-400">
                         <span>الخصم</span>
-                        <span class="font-semibold">- {{ number_format($order->discount_amount, 2) }} $</span>
+                        <span class="font-semibold">- {{ formatPrice($order->discount_amount) }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between text-gray-300">
@@ -116,7 +116,7 @@
                     <div class="border-t border-purple-500/10 pt-3 flex justify-between items-center">
                         <span class="text-xl font-bold text-white">الإجمالي</span>
                         <span class="text-2xl font-black bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
-                            {{ number_format($order->total_amount, 2) }} $
+                            {{ formatPrice($order->total_amount) }}
                         </span>
                     </div>
                 </div>

@@ -33,6 +33,49 @@
 
             <!-- Navigation Links -->
             <div class="hidden lg:flex items-center gap-8">
+                <!-- Currency Selector -->
+                <div class="relative group">
+                    <button class="flex items-center gap-2 text-gray-300 hover:text-purple-500 transition-colors font-medium px-3 py-2 rounded-lg hover:bg-purple-500/10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>{{ getCurrencySymbol(session('currency', getUserCurrency())) }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Currency Dropdown -->
+                    <div class="absolute left-0 mt-2 w-48 bg-[#1F1F1F] border border-purple-500/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[110]">
+                        <div class="py-2">
+                            @php
+                                $currencies = [
+                                    'USD' => ['name' => 'دولار أمريكي', 'symbol' => '$'],
+                                    'OMR' => ['name' => 'ريال عماني', 'symbol' => 'ر.ع.'],
+                                    'SAR' => ['name' => 'ريال سعودي', 'symbol' => 'ر.س'],
+                                    'AED' => ['name' => 'درهم إماراتي', 'symbol' => 'د.إ'],
+                                    'EGP' => ['name' => 'جنيه مصري', 'symbol' => 'ج.م'],
+                                    'KWD' => ['name' => 'دينار كويتي', 'symbol' => 'د.ك'],
+                                    'QAR' => ['name' => 'ريال قطري', 'symbol' => 'ر.ق'],
+                                    'BHD' => ['name' => 'دينار بحريني', 'symbol' => 'د.ب'],
+                                    'EUR' => ['name' => 'يورو', 'symbol' => '€'],
+                                ];
+                                $currentCurrency = session('currency', getUserCurrency());
+                            @endphp
+                            @foreach($currencies as $code => $currency)
+                            <form action="{{ route('currency.change') }}" method="POST" class="inline-block w-full">
+                                @csrf
+                                <input type="hidden" name="currency" value="{{ $code }}">
+                                <button type="submit" class="w-full text-right px-4 py-2 text-gray-300 hover:bg-purple-500/10 hover:text-purple-500 transition-colors flex items-center justify-between {{ $currentCurrency === $code ? 'bg-purple-500/20 text-purple-400' : '' }}">
+                                    <span>{{ $currency['name'] }}</span>
+                                    <span class="text-sm font-semibold">{{ $currency['symbol'] }}</span>
+                                </button>
+                            </form>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <a href="{{ route('home') }}" class="text-gray-300 hover:text-purple-500 transition-colors font-medium">
                     الرئيسية
                 </a>
@@ -119,12 +162,67 @@
                 @endauth
             </div>
 
-            <!-- Mobile Menu Button -->
-            <button id="mobile-menu-btn" class="lg:hidden text-gray-300 hover:text-purple-500">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
+            <!-- Mobile Actions (Cart, Currency, Menu) -->
+            <div class="flex items-center gap-3 lg:hidden">
+                <!-- Currency Selector (Mobile) -->
+                <div class="relative">
+                    <button id="mobile-currency-btn" class="flex items-center gap-1 text-gray-300 hover:text-purple-500 transition-colors p-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm font-semibold">{{ getCurrencySymbol(session('currency', getUserCurrency())) }}</span>
+                    </button>
+                    
+                    <!-- Currency Dropdown (Mobile) -->
+                    <div id="mobile-currency-dropdown" class="hidden absolute left-0 mt-2 w-48 bg-[#1F1F1A] border border-purple-500/20 rounded-lg shadow-xl z-[110]">
+                        <div class="py-2">
+                            @php
+                                $currencies = [
+                                    'USD' => ['name' => 'دولار أمريكي', 'symbol' => '$'],
+                                    'OMR' => ['name' => 'ريال عماني', 'symbol' => 'ر.ع.'],
+                                    'SAR' => ['name' => 'ريال سعودي', 'symbol' => 'ر.س'],
+                                    'AED' => ['name' => 'درهم إماراتي', 'symbol' => 'د.إ'],
+                                    'EGP' => ['name' => 'جنيه مصري', 'symbol' => 'ج.م'],
+                                    'KWD' => ['name' => 'دينار كويتي', 'symbol' => 'د.ك'],
+                                    'QAR' => ['name' => 'ريال قطري', 'symbol' => 'ر.ق'],
+                                    'BHD' => ['name' => 'دينار بحريني', 'symbol' => 'د.ب'],
+                                    'EUR' => ['name' => 'يورو', 'symbol' => '€'],
+                                ];
+                                $currentCurrency = session('currency', getUserCurrency());
+                            @endphp
+                            @foreach($currencies as $code => $currency)
+                            <form action="{{ route('currency.change') }}" method="POST" class="inline-block w-full">
+                                @csrf
+                                <input type="hidden" name="currency" value="{{ $code }}">
+                                <button type="submit" class="w-full text-right px-4 py-2 text-gray-300 hover:bg-purple-500/10 hover:text-purple-500 transition-colors flex items-center justify-between {{ $currentCurrency === $code ? 'bg-purple-500/20 text-purple-400' : '' }}">
+                                    <span class="text-sm">{{ $currency['name'] }}</span>
+                                    <span class="text-xs font-semibold">{{ $currency['symbol'] }}</span>
+                                </button>
+                            </form>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cart (Mobile) -->
+                <a href="{{ route('cart.index') }}" class="relative text-gray-300 hover:text-purple-500 transition-colors p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    @if($cartCount > 0)
+                    <span id="cart-count-mobile" class="absolute -top-1 -left-1 bg-gradient-to-r from-purple-500 to-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                        {{ $cartCount }}
+                    </span>
+                    @endif
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="text-gray-300 hover:text-purple-500 p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -150,9 +248,6 @@
             </a>
             <a href="{{ route('products.index') }}" class="block text-gray-300 hover:text-purple-500 transition-colors font-medium">
                 المنتجات
-            </a>
-            <a href="{{ route('cart.index') }}" class="block text-gray-300 hover:text-purple-500 transition-colors font-medium">
-                السلة @if($cartCount > 0)<span class="inline-flex items-center justify-center w-5 h-5 mr-2 text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-orange-500 rounded-full">{{ $cartCount }}</span>@endif
             </a>
 
             @auth
@@ -194,8 +289,27 @@
         document.getElementById('mobile-menu').classList.toggle('hidden');
     });
 
+    // Mobile Currency Dropdown Toggle
+    const mobileCurrencyBtn = document.getElementById('mobile-currency-btn');
+    const mobileCurrencyDropdown = document.getElementById('mobile-currency-dropdown');
+    
+    if (mobileCurrencyBtn && mobileCurrencyDropdown) {
+        mobileCurrencyBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileCurrencyDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mobileCurrencyBtn.contains(e.target) && !mobileCurrencyDropdown.contains(e.target)) {
+                mobileCurrencyDropdown.classList.add('hidden');
+            }
+        });
+    }
+
     // Update cart count dynamically
     window.updateCartCount = function(count) {
+        // Update desktop cart count
         const cartCountElement = document.getElementById('cart-count');
         if (cartCountElement) {
             if (count > 0) {
@@ -203,6 +317,17 @@
                 cartCountElement.classList.remove('hidden');
             } else {
                 cartCountElement.classList.add('hidden');
+            }
+        }
+        
+        // Update mobile cart count
+        const cartCountMobile = document.getElementById('cart-count-mobile');
+        if (cartCountMobile) {
+            if (count > 0) {
+                cartCountMobile.textContent = count;
+                cartCountMobile.classList.remove('hidden');
+            } else {
+                cartCountMobile.classList.add('hidden');
             }
         }
     };
