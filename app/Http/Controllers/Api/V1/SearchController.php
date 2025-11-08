@@ -67,10 +67,10 @@ class SearchController extends BaseController
 
             // Price range
             if ($minPrice) {
-                $productsQuery->where('current_price', '>=', $minPrice);
+                $productsQuery->whereRaw('COALESCE(sale_price, price) >= ?', [$minPrice]);
             }
             if ($maxPrice) {
-                $productsQuery->where('current_price', '<=', $maxPrice);
+                $productsQuery->whereRaw('COALESCE(sale_price, price) <= ?', [$maxPrice]);
             }
 
             // Brand filter
@@ -86,10 +86,10 @@ class SearchController extends BaseController
             // Sort
             switch ($sort) {
                 case 'price_asc':
-                    $productsQuery->orderBy('current_price', 'asc');
+                    $productsQuery->orderByRaw('COALESCE(sale_price, price) ASC');
                     break;
                 case 'price_desc':
-                    $productsQuery->orderBy('current_price', 'desc');
+                    $productsQuery->orderByRaw('COALESCE(sale_price, price) DESC');
                     break;
                 case 'latest':
                     $productsQuery->latest();
@@ -303,9 +303,10 @@ class SearchController extends BaseController
                   ->orWhere('description', 'like', "%{$query}%");
             });
         }
+        $priceRange = $priceQuery->selectRaw('MIN(COALESCE(sale_price, price)) as min_price, MAX(COALESCE(sale_price, price)) as max_price')->first();
         $filters['price_range'] = [
-            'min' => (float) $priceQuery->min('current_price'),
-            'max' => (float) $priceQuery->max('current_price'),
+            'min' => (float) ($priceRange->min_price ?? 0),
+            'max' => (float) ($priceRange->max_price ?? 0),
         ];
 
         // Categories
