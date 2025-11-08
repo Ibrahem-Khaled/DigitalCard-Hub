@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\SearchController;
 use App\Http\Controllers\Api\V1\HistoryController;
 use App\Http\Controllers\Api\V1\ReferralController;
 use App\Http\Controllers\Api\V1\HomeController;
+use App\Http\Controllers\Api\V1\PolicyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,17 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     // Homepage Routes (Public)
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    // Policy Routes (Public)
+    Route::prefix('policies')->name('policies.')->group(function () {
+        Route::get('/', [PolicyController::class, 'index'])->name('index');
+        Route::get('/privacy', [PolicyController::class, 'privacy'])->name('privacy');
+        Route::get('/terms', [PolicyController::class, 'terms'])->name('terms');
+        Route::get('/refund', [PolicyController::class, 'refund'])->name('refund');
+        Route::get('/shipping', [PolicyController::class, 'shipping'])->name('shipping');
+        Route::get('/returns', [PolicyController::class, 'returns'])->name('returns');
+        Route::get('/{key}', [PolicyController::class, 'show'])->name('show');
+    });
 
     // Protected Routes (Require Authentication)
     Route::middleware('auth:sanctum')->group(function () {
