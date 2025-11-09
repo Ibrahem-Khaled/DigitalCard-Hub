@@ -35,22 +35,62 @@
                     @csrf
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="mb-3">
-                                <label for="user_id" class="form-label">المستخدم <span class="text-danger">*</span></label>
-                                <select class="form-select @error('user_id') is-invalid @enderror" id="user_id" name="user_id" required>
-                                    <option value="">اختر المستخدم</option>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                                            {{ $user->full_name }} ({{ $user->email }})
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label">اختيار المستخدمين <span class="text-danger">*</span></label>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAllUsers">
+                                            <label class="form-check-label fw-bold" for="selectAllUsers">
+                                                <i class="bi bi-check-all me-1"></i>تحديد الكل
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <small class="text-muted">
+                                            <span id="selectedUsersCount">0</span> من <span id="totalUsersCount">{{ $users->count() }}</span> محدد
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="border rounded p-3" id="usersSelectionList" style="max-height: 300px; overflow-y: auto; background-color: #f8f9fa;">
+                                    @if($users->count() > 0)
+                                        @foreach($users as $user)
+                                        <div class="form-check mb-2 p-2 rounded hover-bg-light">
+                                            <input class="form-check-input user-checkbox" type="checkbox" name="user_ids[]" value="{{ $user->id }}" id="user_{{ $user->id }}">
+                                            <label class="form-check-label w-100" for="user_{{ $user->id }}">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span>
+                                                        <strong>{{ $user->full_name }}</strong>
+                                                        <small class="text-muted d-block">{{ $user->email }}</small>
+                                                    </span>
+                                                    @if($user->phone)
+                                                    <span class="badge bg-secondary">
+                                                        <i class="bi bi-phone me-1"></i>{{ $user->phone }}
+                                                    </span>
+                                                    @endif
+                                                </div>
+                                            </label>
+                                        </div>
+                                        @endforeach
+                                    @else
+                                        <div class="text-center text-muted py-3">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                            لا يوجد مستخدمين متاحين
+                                        </div>
+                                    @endif
+                                </div>
+                                @error('user_ids')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                                 @error('user_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="type" class="form-label">نوع الإشعار <span class="text-danger">*</span></label>
@@ -302,12 +342,74 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Select all users functionality
+    function initializeSelectAll() {
+        const selectAllUsersCheckbox = document.getElementById('selectAllUsers');
+        const userCheckboxes = document.querySelectorAll('.user-checkbox');
+        const selectedUsersCountSpan = document.getElementById('selectedUsersCount');
+        const totalUsersCountSpan = document.getElementById('totalUsersCount');
+
+        // Function to update selected count
+        function updateSelectedCount() {
+            const selectedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            const totalCount = userCheckboxes.length;
+            
+            if (selectedUsersCountSpan) {
+                selectedUsersCountSpan.textContent = selectedCount;
+            }
+            
+            // Update select all checkbox state
+            if (selectAllUsersCheckbox) {
+                selectAllUsersCheckbox.checked = selectedCount === totalCount && totalCount > 0;
+                selectAllUsersCheckbox.indeterminate = selectedCount > 0 && selectedCount < totalCount;
+            }
+        }
+
+        // Select all functionality
+        if (selectAllUsersCheckbox) {
+            selectAllUsersCheckbox.addEventListener('change', function() {
+                userCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateSelectedCount();
+            });
+        }
+
+        // Individual checkbox change
+        userCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateSelectedCount();
+            });
+        });
+
+        // Initialize count
+        updateSelectedCount();
+    }
+
+    // Initialize select all
+    initializeSelectAll();
+
+    // Form validation
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const selectedUsers = document.querySelectorAll('.user-checkbox:checked');
+            if (selectedUsers.length === 0) {
+                e.preventDefault();
+                alert('يرجى اختيار مستخدم واحد على الأقل');
+                return false;
+            }
+        });
+    }
+
     // تحديث معاينة الإشعار عند تغيير الحقول
     const formInputs = document.querySelectorAll('input, select, textarea');
 
     formInputs.forEach(input => {
-        input.addEventListener('change', updatePreview);
-        input.addEventListener('input', updatePreview);
+        if (input.type !== 'checkbox' || input.id === 'selectAllUsers') {
+            input.addEventListener('change', updatePreview);
+            input.addEventListener('input', updatePreview);
+        }
     });
 
     function updatePreview() {
@@ -325,41 +427,45 @@ document.addEventListener('DOMContentLoaded', function() {
         const priorityElement = document.querySelector('.notification-priority');
         const timeElement = document.querySelector('.notification-time');
 
-        titleElement.textContent = title;
-        messageElement.textContent = message;
-        typeElement.textContent = type;
-        channelElement.textContent = channel;
-        priorityElement.textContent = priority;
+        if (titleElement) titleElement.textContent = title;
+        if (messageElement) messageElement.textContent = message;
+        if (typeElement) typeElement.textContent = type;
+        if (channelElement) channelElement.textContent = channel;
+        if (priorityElement) priorityElement.textContent = priority;
 
         // تحديث الوقت
-        if (scheduledAt) {
-            const scheduledDate = new Date(scheduledAt);
-            timeElement.textContent = scheduledDate.toLocaleString('ar-SA');
-        } else {
-            timeElement.textContent = 'الآن';
+        if (timeElement) {
+            if (scheduledAt) {
+                const scheduledDate = new Date(scheduledAt);
+                timeElement.textContent = scheduledDate.toLocaleString('ar-SA');
+            } else {
+                timeElement.textContent = 'الآن';
+            }
         }
 
         // تحديث لون الأولوية
         const priorityValue = document.getElementById('priority').value;
-        priorityElement.className = 'notification-priority';
+        if (priorityElement) {
+            priorityElement.className = 'notification-priority';
 
-        switch(priorityValue) {
-            case 'urgent':
-                priorityElement.style.background = '#f8d7da';
-                priorityElement.style.color = '#721c24';
-                break;
-            case 'high':
-                priorityElement.style.background = '#fff3cd';
-                priorityElement.style.color = '#856404';
-                break;
-            case 'normal':
-                priorityElement.style.background = '#d1ecf1';
-                priorityElement.style.color = '#0c5460';
-                break;
-            case 'low':
-                priorityElement.style.background = '#e9ecef';
-                priorityElement.style.color = '#495057';
-                break;
+            switch(priorityValue) {
+                case 'urgent':
+                    priorityElement.style.background = '#f8d7da';
+                    priorityElement.style.color = '#721c24';
+                    break;
+                case 'high':
+                    priorityElement.style.background = '#fff3cd';
+                    priorityElement.style.color = '#856404';
+                    break;
+                case 'normal':
+                    priorityElement.style.background = '#d1ecf1';
+                    priorityElement.style.color = '#0c5460';
+                    break;
+                case 'low':
+                    priorityElement.style.background = '#e9ecef';
+                    priorityElement.style.color = '#495057';
+                    break;
+            }
         }
     }
 

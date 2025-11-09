@@ -307,35 +307,60 @@
                     <!-- Cart Selection -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">اختيار السلات</label>
-                        <div class="row">
+                        <div class="row mb-2">
                             <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="selectAllCarts">
-                                    <label class="form-check-label" for="selectAllCarts">
-                                        تحديد الكل
+                                    <label class="form-check-label fw-bold" for="selectAllCarts">
+                                        <i class="bi bi-check-all me-1"></i>تحديد الكل
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <small class="text-muted">السلات المتروكة فقط</small>
+                            <div class="col-md-6 text-end">
+                                <small class="text-muted">
+                                    <span id="selectedCount">0</span> من <span id="totalCount">{{ $carts->where('is_abandoned', true)->where('user_id', '!=', null)->filter(function($cart) { return $cart->user && $cart->user->email; })->count() }}</span> محددة
+                                </small>
                             </div>
                         </div>
-                        <div class="mt-2" id="cartSelectionList" style="max-height: 200px; overflow-y: auto;">
-                            @foreach($carts->where('is_abandoned', true)->where('user_id', '!=', null) as $cart)
-                            <div class="form-check">
-                                <input class="form-check-input cart-checkbox" type="checkbox" name="cart_ids[]" value="{{ $cart->id }}" id="cart_{{ $cart->id }}">
-                                <label class="form-check-label" for="cart_{{ $cart->id }}">
-                                    {{ $cart->user->full_name ?? 'مستخدم غير محدد' }} - {{ number_format($cart->total_amount, 2) }} {{ $cart->currency }}
-                                </label>
-                            </div>
-                            @endforeach
+                        <div class="mt-2 border rounded p-3" id="cartSelectionList" style="max-height: 250px; overflow-y: auto; background-color: #f8f9fa;">
+                            @php
+                                // عرض فقط السلات المتروكة التي لها مستخدمين مع إيميل
+                                $abandonedCarts = $carts->where('is_abandoned', true)
+                                    ->where('user_id', '!=', null)
+                                    ->filter(function($cart) {
+                                        return $cart->user && $cart->user->email;
+                                    });
+                            @endphp
+                            @if($abandonedCarts->count() > 0)
+                                @foreach($abandonedCarts as $cart)
+                                <div class="form-check mb-2 p-2 rounded hover-bg-light">
+                                    <input class="form-check-input cart-checkbox" type="checkbox" name="cart_ids[]" value="{{ $cart->id }}" id="cart_{{ $cart->id }}">
+                                    <label class="form-check-label w-100" for="cart_{{ $cart->id }}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <strong>{{ $cart->user->full_name ?? 'مستخدم غير محدد' }}</strong>
+                                                <small class="text-muted d-block">{{ $cart->user->email }}</small>
+                                            </span>
+                                            <span class="badge bg-primary">
+                                                {{ formatPrice($cart->total_amount, $cart->currency ?? 'USD') }}
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+                                @endforeach
+                            @else
+                                <div class="text-center text-muted py-3">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    لا توجد سلات متروكة متاحة
+                                </div>
+                            @endif
                         </div>
                     </div>
 
                     <!-- Template Selection -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">نموذج الإشعار</label>
-                        <select class="form-select" id="notificationTemplate" onchange="loadTemplate()">
+                        <select class="form-select" id="notificationTemplate" name="template" onchange="loadTemplate()" required>
                             <option value="">اختر نموذج...</option>
                             <option value="friendly_reminder">تذكير ودود</option>
                             <option value="urgent_reminder">تذكير عاجل</option>
@@ -344,42 +369,12 @@
                         </select>
                     </div>
 
-                    <!-- Channels -->
+                    <!-- Channel - Email Only -->
+                    <input type="hidden" name="channels[]" value="email">
                     <div class="mb-4">
-                        <label class="form-label fw-bold">قنوات الإرسال</label>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="email" id="channel_email">
-                                    <label class="form-check-label" for="channel_email">
-                                        <i class="bi bi-envelope me-1"></i>البريد الإلكتروني
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="sms" id="channel_sms">
-                                    <label class="form-check-label" for="channel_sms">
-                                        <i class="bi bi-phone me-1"></i>SMS
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="whatsapp" id="channel_whatsapp">
-                                    <label class="form-check-label" for="channel_whatsapp">
-                                        <i class="bi bi-whatsapp me-1"></i>واتساب
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="database" id="channel_database" checked>
-                                    <label class="form-check-label" for="channel_database">
-                                        <i class="bi bi-database me-1"></i>قاعدة البيانات
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            سيتم إرسال الإشعار عبر البريد الإلكتروني فقط
                         </div>
                     </div>
 
@@ -441,7 +436,7 @@
                     <!-- Template Selection -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">نموذج الإشعار</label>
-                        <select class="form-select" id="individualTemplate" onchange="loadIndividualTemplate()">
+                        <select class="form-select" id="individualTemplate" name="template" onchange="loadIndividualTemplate()" required>
                             <option value="">اختر نموذج...</option>
                             <option value="friendly_reminder">تذكير ودود</option>
                             <option value="urgent_reminder">تذكير عاجل</option>
@@ -450,42 +445,12 @@
                         </select>
                     </div>
 
-                    <!-- Channels -->
+                    <!-- Channel - Email Only -->
+                    <input type="hidden" name="channels[]" value="email">
                     <div class="mb-4">
-                        <label class="form-label fw-bold">قنوات الإرسال</label>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="email" id="individual_channel_email">
-                                    <label class="form-check-label" for="individual_channel_email">
-                                        <i class="bi bi-envelope me-1"></i>البريد الإلكتروني
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="sms" id="individual_channel_sms">
-                                    <label class="form-check-label" for="individual_channel_sms">
-                                        <i class="bi bi-phone me-1"></i>SMS
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="whatsapp" id="individual_channel_whatsapp">
-                                    <label class="form-check-label" for="individual_channel_whatsapp">
-                                        <i class="bi bi-whatsapp me-1"></i>واتساب
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="channels[]" value="database" id="individual_channel_database" checked>
-                                    <label class="form-check-label" for="individual_channel_database">
-                                        <i class="bi bi-database me-1"></i>قاعدة البيانات
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            سيتم إرسال الإشعار عبر البريد الإلكتروني فقط
                         </div>
                     </div>
 
@@ -651,11 +616,71 @@ function sendBulkNotifications() {
 }
 
 // Select all carts functionality
-document.getElementById('selectAllCarts').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.cart-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
+function initializeSelectAll() {
+    const selectAllCartsCheckbox = document.getElementById('selectAllCarts');
+    const cartCheckboxes = document.querySelectorAll('.cart-checkbox');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const totalCountSpan = document.getElementById('totalCount');
+
+    // Function to update selected count
+    function updateSelectedCount() {
+        const selectedCount = document.querySelectorAll('.cart-checkbox:checked').length;
+        const totalCount = cartCheckboxes.length;
+        
+        if (selectedCountSpan) {
+            selectedCountSpan.textContent = selectedCount;
+        }
+        
+        // Update select all checkbox state
+        if (selectAllCartsCheckbox) {
+            selectAllCartsCheckbox.checked = selectedCount === totalCount && totalCount > 0;
+            selectAllCartsCheckbox.indeterminate = selectedCount > 0 && selectedCount < totalCount;
+        }
+    }
+
+    // Select all functionality
+    if (selectAllCartsCheckbox) {
+        // Remove old event listener if exists
+        const newSelectAll = selectAllCartsCheckbox.cloneNode(true);
+        selectAllCartsCheckbox.parentNode.replaceChild(newSelectAll, selectAllCartsCheckbox);
+        
+        // Add new event listener
+        document.getElementById('selectAllCarts').addEventListener('change', function() {
+            const allCheckboxes = document.querySelectorAll('.cart-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedCount();
+        });
+    }
+
+    // Individual checkbox change
+    cartCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectedCount();
+        });
     });
+
+    // Initialize count
+    updateSelectedCount();
+}
+
+// Initialize when modal opens
+const sendNotificationModal = document.getElementById('sendNotificationModal');
+if (sendNotificationModal) {
+    sendNotificationModal.addEventListener('show.bs.modal', function() {
+        // Wait for modal to be fully shown
+        setTimeout(function() {
+            initializeSelectAll();
+        }, 100);
+    });
+}
+
+// Also initialize on page load if modal is already open
+document.addEventListener('DOMContentLoaded', function() {
+    if (sendNotificationModal && sendNotificationModal.classList.contains('show')) {
+        initializeSelectAll();
+    }
 });
 
 function showAlert(type, message) {

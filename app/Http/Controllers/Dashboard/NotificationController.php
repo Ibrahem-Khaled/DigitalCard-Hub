@@ -142,7 +142,9 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_ids' => 'required_without:user_id|array',
+            'user_ids.*' => 'exists:users,id',
+            'user_id' => 'required_without:user_ids|exists:users,id', // For backward compatibility
             'type' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'message' => 'required|string',
@@ -151,7 +153,10 @@ class NotificationController extends Controller
             'priority' => 'required|in:low,normal,high,urgent',
             'scheduled_at' => 'nullable|date|after:now',
         ], [
-            'user_id.required' => 'يجب اختيار المستخدم',
+            'user_ids.required_without' => 'يجب اختيار مستخدم واحد على الأقل',
+            'user_ids.array' => 'يجب أن تكون قائمة المستخدمين مصفوفة',
+            'user_ids.*.exists' => 'أحد المستخدمين المحددين غير موجود',
+            'user_id.required_without' => 'يجب اختيار المستخدم',
             'user_id.exists' => 'المستخدم غير موجود',
             'type.required' => 'يجب إدخال نوع الإشعار',
             'title.required' => 'يجب إدخال عنوان الإشعار',
@@ -162,7 +167,18 @@ class NotificationController extends Controller
             'priority.in' => 'أولوية الإشعار غير صحيحة',
         ]);
 
-        $notificationData = $request->except(['scheduled_at']);
+        // Get user IDs - support both old (user_id) and new (user_ids) format
+        $userIds = $request->user_ids ?? [$request->user_id];
+        
+        // Remove duplicates
+        $userIds = array_unique($userIds);
+        
+        // Validate that at least one user is selected
+        if (empty($userIds)) {
+            return back()->withErrors(['user_ids' => 'يجب اختيار مستخدم واحد على الأقل'])->withInput();
+        }
+
+        $notificationData = $request->except(['scheduled_at', 'user_id', 'user_ids']);
 
         // تحويل التاريخ
         if ($request->scheduled_at) {
@@ -170,14 +186,47 @@ class NotificationController extends Controller
         }
 
         // إرسال فوري إذا لم يكن مجدول
+        $sentAt = null;
         if (!$request->scheduled_at) {
-            $notificationData['sent_at'] = now();
+            $sentAt = now();
         }
 
-        $notification = Notification::create($notificationData);
+        $createdNotifications = [];
+        $failedNotifications = [];
+
+        // Create notification for each user
+        foreach ($userIds as $userId) {
+            try {
+                $userNotificationData = array_merge($notificationData, [
+                    'user_id' => $userId,
+                ]);
+
+                if ($sentAt) {
+                    $userNotificationData['sent_at'] = $sentAt;
+                }
+
+                $notification = Notification::create($userNotificationData);
+                $createdNotifications[] = $notification;
+            } catch (\Exception $e) {
+                \Log::error("Failed to create notification for user {$userId}: " . $e->getMessage());
+                $failedNotifications[] = $userId;
+            }
+        }
+
+        $successCount = count($createdNotifications);
+        $failedCount = count($failedNotifications);
+
+        if ($failedCount > 0) {
+            return redirect()->route('dashboard.notifications.index')
+                ->with('warning', "تم إنشاء {$successCount} إشعار بنجاح، وفشل إنشاء {$failedCount} إشعار");
+        }
+
+        $message = $successCount > 1 
+            ? "تم إنشاء وإرسال {$successCount} إشعار بنجاح" 
+            : 'تم إنشاء الإشعار بنجاح';
 
         return redirect()->route('dashboard.notifications.index')
-            ->with('success', 'تم إنشاء الإشعار بنجاح');
+            ->with('success', $message);
     }
 
     /**

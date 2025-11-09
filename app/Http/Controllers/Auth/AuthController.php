@@ -72,7 +72,23 @@ class AuthController extends Controller
 
         // Validate credentials
         if ($user && \Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password) && $user->isActive()) {
-            // Don't login yet, send verification code instead
+            // Check if user is admin - admins can login without verification code
+            if ($user->isAdmin()) {
+                // Login admin directly without verification code
+                Auth::login($user, $remember);
+                $request->session()->regenerate();
+
+                // Update last login information
+                $this->authService->updateLastLogin($user);
+
+                RateLimiter::clear($key);
+
+                // Redirect admin to dashboard
+                return redirect()->route('dashboard.index')
+                    ->with('success', 'مرحباً بك في لوحة التحكم');
+            }
+
+            // For non-admin users, send verification code
             $this->authService->generateAndSendVerificationCode($user, 'login');
 
             // Store user ID in session for verification

@@ -3,186 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بطاقاتك الرقمية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>بطاقاتك الرقمية - طلب رقم {{ $order->order_number }}</title>
+    <!--[if mso]>
+    <style type="text/css">
+        body, table, td, a { font-family: Arial, sans-serif !important; }
+    </style>
+    <![endif]-->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Reset Styles */
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+            border: 0;
+            outline: none;
+            text-decoration: none;
+        }
+        
+        /* Main Styles */
         body {
-            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
-            background: #f8f9fa;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             direction: rtl;
+            text-align: right;
         }
+        
         .email-wrapper {
             max-width: 650px;
             margin: 0 auto;
-            background: #ffffff;
+            background-color: #ffffff;
         }
-        .header {
-            background: #0f172a;
+        
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #8B5CF6 0%, #F97316 100%);
             padding: 50px 40px;
             text-align: center;
         }
-        .header h1 {
+        .email-header h1 {
             color: #ffffff;
             font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
         }
-        .header p {
-            color: #cbd5e1;
-            font-size: 16px;
+        .email-header p {
+            color: #fef3c7;
+            font-size: 18px;
+            margin: 0;
+            line-height: 1.6;
         }
-        .content {
+        
+        /* Content */
+        .email-content {
             padding: 40px;
+            background-color: #ffffff;
         }
-        .greeting {
-            font-size: 20px;
-            color: #1e293b;
-            margin-bottom: 15px;
-            font-weight: 700;
+        
+        /* Greeting */
+        .greeting-box {
+            background: linear-gradient(135deg, #f3e8ff 0%, #fed7aa 100%);
+            border-right: 5px solid #8B5CF6;
+            padding: 30px;
+            margin-bottom: 40px;
+            border-radius: 10px;
         }
-        .intro-text {
-            font-size: 15px;
-            color: #64748b;
+        .greeting-text {
+            color: #7C3AED;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            line-height: 1.5;
+        }
+        .greeting-subtext {
+            color: #6D28D9;
+            font-size: 16px;
+            margin: 0;
             line-height: 1.8;
-            margin-bottom: 35px;
         }
-        .order-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+        
+        /* Order Info */
+        .order-info-box {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
-            padding: 25px;
+            padding: 30px;
             margin-bottom: 40px;
         }
-        .order-box h3 {
+        .order-info-title {
             color: #0f172a;
-            font-size: 18px;
-            margin-bottom: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0 0 25px 0;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
         }
         .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
             border-bottom: 1px solid #e2e8f0;
-            font-size: 14px;
         }
         .info-row:last-child {
             border-bottom: none;
         }
+        .info-cell {
+            padding: 15px 0;
+            vertical-align: top;
+        }
         .info-label {
             color: #64748b;
+            font-size: 15px;
             font-weight: 600;
+            width: 40%;
         }
         .info-value {
             color: #0f172a;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
         }
+        
+        /* Cards Section */
         .cards-section {
             margin-top: 40px;
         }
         .section-title {
-            font-size: 24px;
             color: #0f172a;
-            margin-bottom: 30px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: bold;
             text-align: center;
+            margin: 0 0 15px 0;
             padding-bottom: 15px;
-            border-bottom: 3px solid #0f172a;
+            border-bottom: 3px solid #8B5CF6;
         }
+        .section-subtitle {
+            color: #64748b;
+            font-size: 16px;
+            text-align: center;
+            margin: 0 0 35px 0;
+        }
+        
+        /* Product Card */
         .product-card {
-            background: #ffffff;
+            background-color: #ffffff;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            border-radius: 15px;
             margin-bottom: 30px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
         }
         .product-header {
-            background: #0f172a;
+            background: linear-gradient(135deg, #8B5CF6 0%, #F97316 100%);
             color: #ffffff;
-            padding: 18px 25px;
-            font-size: 17px;
-            font-weight: 700;
+            padding: 25px 30px;
         }
-        .card-item {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            margin: 20px;
-            background: #f8fafc;
+        .product-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+        }
+        .product-badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        /* Card Item */
+        .card-container {
+            padding: 30px;
+        }
+        .card-box {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
             padding: 25px;
+            margin-bottom: 20px;
+        }
+        .card-box:last-child {
+            margin-bottom: 0;
         }
         .card-number {
-            background: #0f172a;
+            background: linear-gradient(135deg, #8B5CF6 0%, #F97316 100%);
             color: #ffffff;
-            font-weight: 700;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 8px;
-            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
             margin-bottom: 20px;
-            font-size: 15px;
+            display: inline-block;
         }
-        .detail-item {
-            background: #ffffff;
+        .card-details {
+            margin-top: 20px;
+        }
+        .detail-row {
+            background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 15px;
+            padding: 18px;
             margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        }
+        .detail-row:last-child {
+            margin-bottom: 0;
         }
         .detail-label {
             color: #64748b;
             font-size: 14px;
             font-weight: 600;
-            flex: 1;
+            margin-bottom: 8px;
+            display: block;
         }
         .detail-value {
             color: #0f172a;
-            font-size: 16px;
-            font-weight: 700;
-            background: #f8fafc;
-            padding: 8px 15px;
-            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #f8fafc;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
             direction: ltr;
             text-align: left;
             font-family: 'Courier New', monospace;
-            border: 1px solid #e2e8f0;
+            letter-spacing: 1px;
+            word-break: break-all;
         }
         .value-badge {
-            background: #0f172a;
+            background: linear-gradient(135deg, #8B5CF6 0%, #F97316 100%);
             color: #ffffff;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-block;
         }
+        
+        /* Warning Box */
         .warning-box {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 3px solid #f59e0b;
             border-radius: 12px;
-            padding: 25px;
+            padding: 30px;
             margin-top: 40px;
         }
-        .warning-box h4 {
+        .warning-title {
             color: #92400e;
-            font-size: 18px;
-            margin-bottom: 15px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0 0 20px 0;
         }
         .warning-list {
-            list-style: none;
+            margin: 0;
             padding: 0;
+            list-style: none;
         }
         .warning-list li {
             color: #92400e;
-            font-size: 14px;
-            padding: 8px 0;
+            font-size: 15px;
+            padding: 10px 0;
             padding-right: 30px;
             position: relative;
             line-height: 1.8;
@@ -191,188 +284,276 @@
             content: '✓';
             position: absolute;
             right: 0;
+            top: 10px;
             color: #059669;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
+            background-color: #ffffff;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .footer {
-            background: #0f172a;
+        
+        /* Footer */
+        .email-footer {
+            background: linear-gradient(135deg, #8B5CF6 0%, #F97316 100%);
             padding: 40px;
             text-align: center;
-            color: #cbd5e1;
         }
         .footer-logo {
-            font-size: 22px;
-            font-weight: 700;
             color: #ffffff;
-            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 0 20px 0;
         }
-        .footer p {
-            font-size: 14px;
-            margin: 10px 0;
+        .footer-text {
+            color: #fef3c7;
+            font-size: 16px;
+            margin: 15px 0;
             line-height: 1.8;
         }
-        .divider {
-            height: 2px;
-            background: #e2e8f0;
-            margin: 40px 0;
+        .footer-copyright {
+            color: #fde68a;
+            font-size: 13px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
+        
+        /* Responsive */
         @media only screen and (max-width: 600px) {
-            .header, .content, .footer {
-                padding: 30px 20px;
+            .email-wrapper {
+                width: 100% !important;
             }
-            .card-item {
-                margin: 15px;
-                padding: 20px;
+            .email-header, .email-content, .email-footer {
+                padding: 30px 20px !important;
             }
-            .detail-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+            .email-header h1 {
+                font-size: 26px !important;
+            }
+            .greeting-text {
+                font-size: 20px !important;
+            }
+            .section-title {
+                font-size: 22px !important;
+            }
+            .product-header {
+                padding: 20px !important;
+            }
+            .card-container {
+                padding: 20px !important;
+            }
+            .card-box {
+                padding: 20px !important;
             }
             .detail-value {
-                width: 100%;
+                font-size: 16px !important;
+                padding: 10px 15px !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="email-wrapper">
-        <!-- Header -->
-        <div class="header">
-            <h1>🎉 بطاقاتك الرقمية جاهزة!</h1>
-            <p>تم إرسال بطاقاتك بنجاح</p>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <!-- Greeting -->
-            <div class="greeting">
-                مرحباً {{ $customerName }} 👋
-            </div>
-
-            <!-- Intro Text -->
-            <p class="intro-text">
-                نشكرك على طلبك! نحن سعداء بإبلاغك أن بطاقاتك الرقمية جاهزة للاستخدام الآن.
-                ستجد أدناه جميع تفاصيل البطاقات التي طلبتها.
-            </p>
-
-            <!-- Order Info -->
-            <div class="order-box">
-                <h3>📋 معلومات الطلب</h3>
-                <div class="info-row">
-                    <span class="info-label">رقم الطلب:</span>
-                    <span class="info-value">{{ $order->order_number }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">تاريخ الطلب:</span>
-                    <span class="info-value">{{ $order->created_at->format('Y-m-d H:i') }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">إجمالي المبلغ:</span>
-                    <span class="info-value">{{ number_format($order->total_amount, 2) }} $</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">حالة الطلب:</span>
-                    <span class="info-value">{{ $order->getStatusInArabic() }}</span>
-                </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <!-- Digital Cards Section -->
-            <div class="cards-section">
-                <h2 class="section-title">💳 بطاقاتك الرقمية</h2>
-
-                @foreach($orderItems as $item)
-                <div class="product-card">
-                    <div class="product-header">
-                        📦 {{ $item['product_name'] }} ({{ $item['quantity'] }} بطاقة)
-                    </div>
-
-                    @foreach($item['cards'] as $index => $card)
-                    <div class="card-item">
-                        <div class="card-number">
-                            البطاقة رقم {{ $index + 1 }}
-                        </div>
-
-                        <div class="detail-item">
-                            <span class="detail-label">🔐 كود البطاقة:</span>
-                            <span class="detail-value">{{ $card->card_code ?? 'غير متوفر' }}</span>
-                        </div>
-
-                        @if(!empty($card->card_pin))
-                        <div class="detail-item">
-                            <span class="detail-label">🔑 رقم PIN:</span>
-                            <span class="detail-value">{{ $card->card_pin }}</span>
-                        </div>
-                        @endif
-
-                        @if(!empty($card->card_number))
-                        <div class="detail-item">
-                            <span class="detail-label">💳 رقم البطاقة:</span>
-                            <span class="detail-value">{{ $card->card_number }}</span>
-                        </div>
-                        @endif
-
-                        @if(!empty($card->serial_number))
-                        <div class="detail-item">
-                            <span class="detail-label">📋 الرقم التسلسلي:</span>
-                            <span class="detail-value">{{ $card->serial_number }}</span>
-                        </div>
-                        @endif
-
-                        @if(!empty($card->value))
-                        <div class="detail-item">
-                            <span class="detail-label">💰 القيمة:</span>
-                            <span class="value-badge">{{ number_format($card->value, 2) }} {{ $card->currency ?? 'USD' }}</span>
-                        </div>
-                        @endif
-
-                        @if(!empty($card->expiry_date))
-                        <div class="detail-item">
-                            <span class="detail-label">📅 تاريخ الانتهاء:</span>
-                            <span class="detail-value">{{ $card->expiry_date->format('Y-m-d') }}</span>
-                        </div>
-                        @endif
-                    </div>
-                    @endforeach
-                </div>
-                @endforeach
-            </div>
-
-            <!-- Important Notes -->
-            <div class="warning-box">
-                <h4>⚠️ ملاحظات هامة</h4>
-                <ul class="warning-list">
-                    <li>احتفظ بهذا البريد الإلكتروني في مكان آمن</li>
-                    <li>لا تشارك معلومات البطاقة مع أي شخص</li>
-                    <li>تحقق من تاريخ انتهاء صلاحية البطاقة قبل الاستخدام</li>
-                    <li>في حالة وجود أي مشكلة، تواصل معنا فوراً</li>
-                    <li>البطاقات غير قابلة للاسترجاع بعد الإرسال</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <div class="footer-logo">💳 متجر البطاقات الرقمية</div>
-            <p>شكراً لثقتك بنا! نتمنى لك تجربة ممتعة مع بطاقاتك الرقمية.</p>
-            <p>إذا كان لديك أي استفسار، لا تتردد في التواصل معنا.</p>
-
-            <p style="margin-top: 25px; font-size: 12px; color: #94a3b8;">
-                &copy; {{ date('Y') }} متجر البطاقات الرقمية. جميع الحقوق محفوظة.
-            </p>
-        </div>
+    <div style="background-color: #f5f7fa; padding: 20px 0;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+                <td align="center">
+                    <table role="presentation" class="email-wrapper" cellspacing="0" cellpadding="0" border="0" width="650" style="background-color: #ffffff;">
+                        <!-- Header -->
+                        <tr>
+                            <td class="email-header">
+                                <h1>🎉 بطاقاتك الرقمية جاهزة!</h1>
+                                <p>تم إرسال بطاقاتك بنجاح - طلب رقم {{ $order->order_number }}</p>
+                            </td>
+                        </tr>
+                        
+                        <!-- Content -->
+                        <tr>
+                            <td class="email-content">
+                                <!-- Greeting -->
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td class="greeting-box">
+                                            <div class="greeting-text">مرحباً {{ $customerName }} 👋</div>
+                                            <div class="greeting-subtext">
+                                                نشكرك على طلبك! نحن سعداء بإبلاغك أن بطاقاتك الرقمية جاهزة للاستخدام الآن.
+                                                ستجد أدناه جميع تفاصيل البطاقات التي طلبتها.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <!-- Order Info -->
+                                <table role="presentation" class="order-info-box" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <div class="order-info-title">📋 معلومات الطلب</div>
+                                            <table role="presentation" class="info-table" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                <tr class="info-row">
+                                                    <td class="info-cell info-label">رقم الطلب:</td>
+                                                    <td class="info-cell info-value">{{ $order->order_number }}</td>
+                                                </tr>
+                                                <tr class="info-row">
+                                                    <td class="info-cell info-label">تاريخ الطلب:</td>
+                                                    <td class="info-cell info-value">{{ $order->created_at->format('Y-m-d H:i') }}</td>
+                                                </tr>
+                                                <tr class="info-row">
+                                                    <td class="info-cell info-label">إجمالي المبلغ:</td>
+                                                    <td class="info-cell info-value">{{ formatPrice($order->total_amount, $order->currency ?? 'USD') }}</td>
+                                                </tr>
+                                                <tr class="info-row">
+                                                    <td class="info-cell info-label">حالة الطلب:</td>
+                                                    <td class="info-cell info-value">{{ $order->getStatusInArabic() }}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <!-- Cards Section -->
+                                <table role="presentation" class="cards-section" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <div class="section-title">💳 بطاقاتك الرقمية</div>
+                                            <div class="section-subtitle">جميع البطاقات التي طلبتها جاهزة للاستخدام</div>
+                                            
+                                            @foreach($orderItems as $item)
+                                            <!-- Product Card -->
+                                            <table role="presentation" class="product-card" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                <tr>
+                                                    <td class="product-header">
+                                                        <div class="product-name">📦 {{ $item['product_name'] }}</div>
+                                                        <div class="product-badge">{{ $item['quantity'] }} بطاقة</div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="card-container">
+                                                        @foreach($item['cards'] as $index => $card)
+                                                        <!-- Card Box -->
+                                                        <table role="presentation" class="card-box" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="card-number">البطاقة رقم {{ $index + 1 }}</div>
+                                                                    <div class="card-details">
+                                                                        <!-- Card Code -->
+                                                                        <table role="presentation" class="detail-row" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="detail-label">🔐 كود البطاقة</div>
+                                                                                    <div class="detail-value">{{ $card->card_code ?? 'غير متوفر' }}</div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        
+                                                                        @if(!empty($card->card_pin))
+                                                                        <!-- Card PIN -->
+                                                                        <table role="presentation" class="detail-row" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="detail-label">🔑 رقم PIN</div>
+                                                                                    <div class="detail-value">{{ $card->card_pin }}</div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        @endif
+                                                                        
+                                                                        @if(!empty($card->card_number))
+                                                                        <!-- Card Number -->
+                                                                        <table role="presentation" class="detail-row" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="detail-label">💳 رقم البطاقة</div>
+                                                                                    <div class="detail-value">{{ $card->card_number }}</div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        @endif
+                                                                        
+                                                                        @if(!empty($card->serial_number))
+                                                                        <!-- Serial Number -->
+                                                                        <table role="presentation" class="detail-row" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="detail-label">📋 الرقم التسلسلي</div>
+                                                                                    <div class="detail-value">{{ $card->serial_number }}</div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        @endif
+                                                                        
+                                                                        @if(!empty($card->value))
+                                                                        <!-- Card Value -->
+                                                                        <table role="presentation" class="detail-row" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="detail-label">💰 القيمة</div>
+                                                                                    <div class="value-badge">{{ number_format($card->value, 2) }} {{ $card->currency ?? 'USD' }}</div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        @endif
+                                                                        
+                                                                        @if(!empty($card->expiry_date))
+                                                                        <!-- Expiry Date -->
+                                                                        <table role="presentation" class="detail-row" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <div class="detail-label">📅 تاريخ الانتهاء</div>
+                                                                                    <div class="detail-value">{{ $card->expiry_date->format('Y-m-d') }}</div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        @endif
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        @endforeach
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            @endforeach
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <!-- Warning Box -->
+                                <table role="presentation" class="warning-box" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <div class="warning-title">⚠️ ملاحظات هامة</div>
+                                            <ul class="warning-list">
+                                                <li>احتفظ بهذا البريد الإلكتروني في مكان آمن</li>
+                                                <li>لا تشارك معلومات البطاقة مع أي شخص</li>
+                                                <li>تحقق من تاريخ انتهاء صلاحية البطاقة قبل الاستخدام</li>
+                                                <li>في حالة وجود أي مشكلة، تواصل معنا فوراً</li>
+                                                <li>البطاقات غير قابلة للاسترجاع بعد الإرسال</li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        
+                        <!-- Footer -->
+                        <tr>
+                            <td class="email-footer">
+                                <div class="footer-logo">💳 متجر البطاقات الرقمية</div>
+                                <div class="footer-text">شكراً لثقتك بنا! نتمنى لك تجربة ممتعة مع بطاقاتك الرقمية.</div>
+                                <div class="footer-text">إذا كان لديك أي استفسار، لا تتردد في التواصل معنا.</div>
+                                <div class="footer-copyright">
+                                    &copy; {{ date('Y') }} متجر البطاقات الرقمية. جميع الحقوق محفوظة.
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-

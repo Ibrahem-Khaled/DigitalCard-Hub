@@ -104,7 +104,24 @@ class AuthController extends BaseController
             return $this->errorResponse('حسابك غير نشط. يرجى التواصل مع الإدارة', 403);
         }
 
-        // Generate verification code
+        // Check if user is admin - admins can login without verification code
+        if ($user->isAdmin()) {
+            // Update last login
+            $this->authService->updateLastLogin($user);
+
+            // Create token
+            $token = $user->createToken('api-token')->plainTextToken;
+
+            RateLimiter::clear($key);
+
+            return $this->successResponse([
+                'user' => new \App\Http\Resources\Api\UserResource($user),
+                'token' => $token,
+                'requires_verification' => false,
+            ], 'تم تسجيل الدخول بنجاح', 200);
+        }
+
+        // For non-admin users, generate verification code
         $this->authService->generateAndSendVerificationCode($user, 'login');
 
         RateLimiter::clear($key);

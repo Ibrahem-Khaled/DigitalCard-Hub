@@ -127,8 +127,12 @@ class CheckoutController extends Controller
 
             // إضافة عناصر الطلب وتخصيص البطاقات الرقمية
             $orderItemsWithCards = [];
+            $hasInsufficientCards = false;
 
             foreach ($cart->items as $item) {
+                // تحميل المنتج للتأكد من أنه منتج رقمي
+                $item->load('product');
+                
                 $orderItem = OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
@@ -138,16 +142,36 @@ class CheckoutController extends Controller
                     'status' => 'pending',
                 ]);
 
-                // تخصيص البطاقات الرقمية
-                $assignedCards = $this->assignDigitalCards($orderItem, $item->quantity);
+                // تخصيص البطاقات الرقمية فقط للمنتجات الرقمية
+                if ($item->product && $item->product->is_digital) {
+                    try {
+                        $assignedCards = $this->assignDigitalCards($orderItem, $item->quantity);
 
-                if (!empty($assignedCards)) {
-                    $orderItemsWithCards[] = [
-                        'product_name' => $item->product->name,
-                        'quantity' => $item->quantity,
-                        'cards' => $assignedCards
-                    ];
+                        if (!empty($assignedCards)) {
+                            $orderItemsWithCards[] = [
+                                'product_name' => $item->product->name,
+                                'quantity' => $item->quantity,
+                                'cards' => $assignedCards
+                            ];
+                        } else {
+                            // إذا لم تكن هناك بطاقات كافية، نضيف المنتج مع رسالة خطأ
+                            $hasInsufficientCards = true;
+                            Log::error("Insufficient digital cards for product {$item->product->name} (ID: {$item->product_id}). Requested: {$item->quantity}");
+                        }
+                    } catch (\Exception $e) {
+                        // إذا حدث خطأ في تخصيص البطاقات، نضيف المنتج مع رسالة خطأ
+                        $hasInsufficientCards = true;
+                        Log::error("Error assigning digital cards for product {$item->product->name} (ID: {$item->product_id}): " . $e->getMessage());
+                    }
                 }
+            }
+
+            // إذا لم تكن هناك بطاقات كافية، نعيد الخطأ
+            if ($hasInsufficientCards && empty($orderItemsWithCards)) {
+                DB::rollBack();
+                return redirect()->back()
+                    ->with('error', 'عذراً، لا توجد بطاقات كافية في المخزون لإتمام طلبك. يرجى المحاولة مرة أخرى لاحقاً.')
+                    ->withInput();
             }
 
             // إنشاء سجل الدفع
@@ -291,12 +315,13 @@ class CheckoutController extends Controller
         $availableCards = DigitalCard::where('product_id', $orderItem->product_id)
             ->available()
             ->limit($quantity)
+            ->lockForUpdate() // قفل البطاقات لمنع التضارب
             ->get();
 
         if ($availableCards->count() < $quantity) {
             // إذا لم تكن هناك بطاقات كافية، يمكن إرسال إشعار للإدارة
-            Log::warning("Not enough digital cards for product {$orderItem->product_id}. Requested: {$quantity}, Available: {$availableCards->count()}");
-            return [];
+            Log::error("Not enough digital cards for product {$orderItem->product_id}. Requested: {$quantity}, Available: {$availableCards->count()}");
+            throw new \Exception("لا توجد بطاقات كافية في المخزون للمنتج. المطلوب: {$quantity}, المتوفر: {$availableCards->count()}");
         }
 
         $assignedCards = [];
@@ -311,6 +336,8 @@ class CheckoutController extends Controller
                 $orderItem->id
             );
 
+            // إعادة تحميل البطاقة للحصول على البيانات المحدثة
+            $card->refresh();
             $assignedCards[] = $card;
         }
 

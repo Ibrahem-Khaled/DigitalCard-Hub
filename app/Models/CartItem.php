@@ -95,12 +95,47 @@ class CartItem extends Model
     {
         if ($quantity <= 0) {
             $this->delete();
-        } else {
-            $this->update([
-                'quantity' => $quantity,
-            ]);
-            $this->updateTotal();
+            return;
         }
+
+        // تحميل المنتج مع التحقق من المخزون
+        $this->load('product');
+        $product = $this->product;
+
+        if (!$product) {
+            throw new \Exception('المنتج غير موجود');
+        }
+
+        // التحقق من المخزون للمنتجات الرقمية
+        if ($product->is_digital) {
+            $product->loadCount(['digitalCards as available_cards_count' => function($query) {
+                $query->where('is_used', false)
+                      ->where('status', 'active')
+                      ->where(function ($q) {
+                          $q->whereNull('expiry_date')
+                            ->orWhere('expiry_date', '>', now());
+                      });
+            }]);
+            
+            $availableStock = $product->available_cards_count ?? $product->stock_quantity;
+            
+            // حساب الكمية المطلوبة (الكمية الجديدة - الكمية الحالية في السلة)
+            // نحتاج للتحقق من الكمية الجديدة فقط لأن الكمية الحالية موجودة بالفعل
+            // لكن يجب التحقق من أن الكمية الجديدة لا تتجاوز المخزون المتاح
+            if ($availableStock < $quantity) {
+                throw new \Exception("الكمية المطلوبة غير متوفرة. المتوفر في المخزون: {$availableStock}");
+            }
+        } else {
+            // للمنتجات غير الرقمية، التحقق من توفر المنتج
+            if (!$product->is_in_stock) {
+                throw new \Exception('المنتج غير متوفر حالياً');
+            }
+        }
+
+        $this->update([
+            'quantity' => $quantity,
+        ]);
+        $this->updateTotal();
     }
 }
 

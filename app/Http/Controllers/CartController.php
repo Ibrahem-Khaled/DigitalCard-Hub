@@ -44,7 +44,46 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::withCount(['digitalCards as available_cards_count' => function($query) {
+            $query->where('is_used', false)
+                  ->where('status', 'active')
+                  ->where(function ($q) {
+                      $q->whereNull('expiry_date')
+                        ->orWhere('expiry_date', '>', now());
+                  });
+        }])->findOrFail($request->product_id);
+
+        // التحقق من المخزون
+        if ($product->is_digital) {
+            $availableStock = $product->available_cards_count ?? $product->stock_quantity;
+            
+            // التحقق من وجود المنتج في السلة
+            $cart = $this->getOrCreateCart();
+            $cartItem = $cart->items()->where('product_id', $product->id)->first();
+            
+            // حساب الكمية المطلوبة (الكمية الموجودة في السلة + الكمية الجديدة)
+            $requestedQuantity = $request->quantity;
+            if ($cartItem) {
+                $requestedQuantity += $cartItem->quantity;
+            }
+            
+            if ($availableStock < $requestedQuantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "الكمية المطلوبة غير متوفرة. المتوفر في المخزون: {$availableStock}",
+                    'available_stock' => $availableStock
+                ], 400);
+            }
+        } else {
+            // للمنتجات غير الرقمية، التحقق من توفر المنتج
+            if (!$product->is_in_stock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المنتج غير متوفر حالياً'
+                ], 400);
+            }
+        }
+
         $cart = $this->getOrCreateCart();
 
         // التحقق من وجود المنتج في السلة
@@ -83,12 +122,19 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cartItem->setQuantity($request->quantity);
+        try {
+            $cartItem->setQuantity($request->quantity);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'تم تحديث الكمية بنجاح'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث الكمية بنجاح'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 
     /**
