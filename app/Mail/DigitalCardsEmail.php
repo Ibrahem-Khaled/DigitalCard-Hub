@@ -16,6 +16,8 @@ class DigitalCardsEmail extends Mailable
     public $order;
     public $orderItems;
     public $customerName;
+    public $logoPath;
+    public $siteName;
 
     /**
      * Create a new message instance.
@@ -25,6 +27,8 @@ class DigitalCardsEmail extends Mailable
         $this->order = $order;
         $this->orderItems = $orderItems;
         $this->customerName = $customerName;
+        $this->logoPath = public_path('assets/defult-logo.jpg');
+        $this->siteName = \App\Models\Setting::get('site_name', config('app.name', 'متجر البطاقات الرقمية'));
     }
 
     /**
@@ -38,13 +42,18 @@ class DigitalCardsEmail extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * Build the message.
      */
-    public function content(): Content
+    public function build()
     {
-        return new Content(
-            view: 'emails.digital-cards',
-        );
+        return $this->view('emails.digital-cards')
+            ->with([
+                'order' => $this->order,
+                'orderItems' => $this->orderItems,
+                'customerName' => $this->customerName,
+                'logoPath' => $this->logoPath,
+                'siteName' => $this->siteName,
+            ]);
     }
 
     /**

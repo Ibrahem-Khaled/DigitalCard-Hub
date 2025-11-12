@@ -43,4 +43,13 @@ return [
         'temperature' => env('OPENAI_TEMPERATURE', 0.7),
     ],
 
+    'zoho' => [
+        'client_id' => env('ZOHO_CLIENT_ID'),
+        'client_secret' => env('ZOHO_CLIENT_SECRET'),
+        'refresh_token' => env('ZOHO_REFRESH_TOKEN'),
+        'organization_id' => env('ZOHO_ORGANIZATION_ID'),
+        'region' => env('ZOHO_REGION', 'us'), // us, eu, in, au, jp
+        'invoice_template_id' => env('ZOHO_INVOICE_TEMPLATE_ID', null), // Arabic template ID (optional)
+    ],
+
 ];

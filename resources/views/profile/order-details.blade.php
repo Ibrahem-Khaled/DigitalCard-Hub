@@ -156,9 +156,18 @@
                 <div class="bg-[#1A1A1A] rounded-2xl border border-purple-500/20 p-6">
                     <h3 class="text-xl font-bold text-white mb-4">إجراءات</h3>
                     <div class="space-y-3">
-                        <button class="w-full bg-gradient-to-r from-purple-500 to-orange-500 text-white py-3 rounded-xl font-bold hover:shadow-2xl hover:shadow-purple-500/50 transition-all">
-                            تحميل الفاتورة
+                        @if($order->payment_status === 'paid')
+                        <a href="{{ route('profile.zoho-invoice', $order->id) }}" class="block w-full bg-gradient-to-r from-purple-500 to-orange-500 text-white py-3 rounded-xl font-bold text-center hover:shadow-2xl hover:shadow-purple-500/50 transition-all">
+                            <svg class="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            تحميل الفاتورة الضريبية
+                        </a>
+                        @else
+                        <button disabled class="w-full bg-gray-600 text-gray-400 py-3 rounded-xl font-bold cursor-not-allowed">
+                            الفاتورة متاحة فقط للطلبات المدفوعة
                         </button>
+                        @endif
                         <a href="{{ route('contact') }}" class="block w-full bg-[#0F0F0F] border border-purple-500/20 text-white py-3 rounded-xl font-bold text-center hover:border-purple-500 transition-all">
                             تواصل معنا
                         </a>

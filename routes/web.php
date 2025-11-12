@@ -49,6 +49,9 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/success/{order}', [App\Http\Controllers\CheckoutController::class, 'success'])->name('success');
 });
 
+// Order Invoice Route (Public - for email access)
+Route::get('/order/{order}/invoice', [App\Http\Controllers\ProfileController::class, 'downloadInvoicePublic'])->name('order.invoice');
+
 // Profile Routes (Requires Auth)
 Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
     Route::get('/', [App\Http\Controllers\ProfileController::class, 'index'])->name('index');
@@ -56,6 +59,7 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::put('/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');
     Route::get('/orders', [App\Http\Controllers\ProfileController::class, 'orders'])->name('orders');
     Route::get('/orders/{id}', [App\Http\Controllers\ProfileController::class, 'orderDetails'])->name('order-details');
+    Route::get('/orders/{id}/invoice', [App\Http\Controllers\ProfileController::class, 'downloadInvoice'])->name('invoice');
     Route::get('/loyalty-points', [App\Http\Controllers\ProfileController::class, 'loyaltyPoints'])->name('loyalty-points');
     Route::get('/referrals', [App\Http\Controllers\ProfileController::class, 'referrals'])->name('referrals');
 });

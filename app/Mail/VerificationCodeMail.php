@@ -18,6 +18,7 @@ class VerificationCodeMail extends Mailable
     public $user;
     public $code;
     public $type;
+    public $logoPath;
 
     /**
      * Create a new message instance.
@@ -27,6 +28,7 @@ class VerificationCodeMail extends Mailable
         $this->user = $user;
         $this->code = $code;
         $this->type = $type;
+        $this->logoPath = public_path('assets/defult-logo.jpg');
     }
 
     /**
@@ -34,8 +36,8 @@ class VerificationCodeMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = $this->type === 'registration' 
-            ? 'كود التحقق - إنشاء حساب جديد' 
+        $subject = $this->type === 'registration'
+            ? 'كود التحقق - إنشاء حساب جديد'
             : 'كود التحقق - تسجيل الدخول';
 
         $fromAddress = config('mail.from.address');
@@ -48,19 +50,23 @@ class VerificationCodeMail extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * Build the message.
      */
-    public function content(): Content
+    public function build()
     {
-        return new Content(
-            view: 'emails.verification-code',
-            with: [
+        $subject = $this->type === 'registration'
+            ? 'كود التحقق - إنشاء حساب جديد'
+            : 'كود التحقق - تسجيل الدخول';
+
+        return $this->subject($subject)
+            ->view('emails.verification-code')
+            ->with([
                 'user' => $this->user,
                 'code' => $this->code,
                 'type' => $this->type,
                 'siteName' => config('app.name', 'متجر البطاقات الرقمية'),
-            ]
-        );
+                'logoPath' => $this->logoPath,
+            ]);
     }
 
     /**

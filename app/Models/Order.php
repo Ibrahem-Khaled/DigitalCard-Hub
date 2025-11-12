@@ -15,6 +15,7 @@ class Order extends Model
         'user_id', 'order_number', 'status', 'payment_status', 'payment_method', 'payment_reference',
         'subtotal', 'tax_amount', 'shipping_amount', 'discount_amount', 'total_amount', 'currency',
         'coupon_code', 'shipping_address', 'billing_address', 'notes',
+        'zoho_invoice_id', 'zoho_invoice_number',
         'processed_at', 'shipped_at', 'delivered_at', 'cancelled_at', 'refunded_at'
     ];
 
